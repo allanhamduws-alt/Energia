@@ -479,7 +479,7 @@ export function Footer() {
         .partner-label {
           font-size: 11px;
           font-weight: 600;
-          color: #64748b;
+          color: #94a3b8;
           text-transform: uppercase;
           letter-spacing: 0.08em;
           flex-shrink: 0;
@@ -500,8 +500,8 @@ export function Footer() {
 
         .partner-brand {
           font-size: 13px;
-          font-weight: 500;
-          color: #94a3b8;
+          font-weight: 600;
+          color: #e2e8f0;
           transition: color 0.25s ease;
         }
 
@@ -549,8 +549,8 @@ export function Footer() {
         }
 
         .footer-tagline {
-          font-size: 13px;
-          color: #94a3b8;
+          font-size: 14px;
+          color: #e2e8f0;
           line-height: 1.65;
           max-width: 280px;
         }
@@ -566,8 +566,8 @@ export function Footer() {
           display: inline-flex;
           align-items: center;
           gap: 10px;
-          font-size: 13px;
-          color: #cbd5e1;
+          font-size: 14px;
+          color: #ffffff;
           transition: color 0.25s ease;
           width: fit-content;
         }
@@ -591,11 +591,11 @@ export function Footer() {
           width: 38px;
           height: 38px;
           border-radius: 8px;
-          background: #1e293b;
+          background: #334155;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #94a3b8;
+          color: #ffffff;
           transition: all 0.25s ease;
         }
 
@@ -626,8 +626,8 @@ export function Footer() {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          font-size: 13px;
-          color: #cbd5e1;
+          font-size: 14px;
+          color: #ffffff;
           transition: all 0.25s ease;
         }
 
@@ -671,8 +671,8 @@ export function Footer() {
         }
 
         .footer-newsletter > p {
-          font-size: 13px;
-          color: #94a3b8;
+          font-size: 14px;
+          color: #e2e8f0;
           line-height: 1.6;
           margin-bottom: 16px;
         }
@@ -703,7 +703,7 @@ export function Footer() {
         }
 
         .newsletter-form input::placeholder {
-          color: #64748b;
+          color: #94a3b8;
         }
 
         .newsletter-form button {
@@ -757,8 +757,8 @@ export function Footer() {
           display: flex;
           align-items: center;
           gap: 6px;
-          font-size: 11px;
-          color: #64748b;
+          font-size: 12px;
+          color: #cbd5e1;
         }
 
         .trust-badge svg {
@@ -781,8 +781,8 @@ export function Footer() {
         }
 
         .footer-bottom-content p {
-          font-size: 12px;
-          color: #64748b;
+          font-size: 13px;
+          color: #94a3b8;
         }
 
         .footer-bottom-links {
@@ -792,8 +792,8 @@ export function Footer() {
         }
 
         .footer-bottom-links a {
-          font-size: 12px;
-          color: #64748b;
+          font-size: 13px;
+          color: #cbd5e1;
           transition: color 0.25s ease;
         }
 
