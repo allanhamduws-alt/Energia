@@ -7,8 +7,8 @@ import { Menu, X, Flame, ChevronDown } from 'lucide-react'
 
 const navigation = [
   { name: 'Startseite', href: '/' },
-  { 
-    name: 'Produkte', 
+  {
+    name: 'Produkte',
     href: '/produkte',
     dropdown: [
       { name: 'Solarmodule', href: '/produkte#module' },
@@ -75,13 +75,28 @@ export function Header() {
         >
           {/* Logo */}
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
-              <rect x="6" y="14" width="36" height="28" rx="4" fill="#16a34a" />
-              <line x1="6" y1="24" x2="42" y2="24" stroke="white" strokeWidth="1.5" />
-              <line x1="6" y1="32" x2="42" y2="32" stroke="white" strokeWidth="1.5" />
-              <line x1="18" y1="14" x2="18" y2="42" stroke="white" strokeWidth="1.5" />
-              <line x1="30" y1="14" x2="30" y2="42" stroke="white" strokeWidth="1.5" />
-              <circle cx="24" cy="8" r="4" fill="#15803d" />
+            <svg width="36" height="30" viewBox="0 0 90 75" fill="none">
+              {/* E-Shape: Top and bottom bars equal, middle bar shorter */}
+              {/* Top bar - longest */}
+              <path d="M0 0 L80 0 L72 14 L0 14 Z" fill="url(#logoGrad1)" />
+              {/* Middle bar - shorter */}
+              <path d="M0 30 L55 30 L47 44 L0 44 Z" fill="url(#logoGrad2)" />
+              {/* Bottom bar - same as top */}
+              <path d="M0 60 L80 60 L72 74 L0 74 Z" fill="url(#logoGrad3)" />
+              <defs>
+                <linearGradient id="logoGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#0f172a" />
+                  <stop offset="100%" stopColor="#16a34a" />
+                </linearGradient>
+                <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#15803d" />
+                  <stop offset="100%" stopColor="#22c55e" />
+                </linearGradient>
+                <linearGradient id="logoGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#16a34a" />
+                  <stop offset="100%" stopColor="#4ade80" />
+                </linearGradient>
+              </defs>
             </svg>
             <span style={{ fontSize: '22px', fontWeight: 700, color: '#171717', fontFamily: 'var(--font-sans)' }}>
               Energia
@@ -99,7 +114,7 @@ export function Header() {
           >
             {navigation.map((item) => (
               item.dropdown ? (
-                <div 
+                <div
                   key={item.name}
                   ref={dropdownRef}
                   style={{ position: 'relative' }}
@@ -120,14 +135,14 @@ export function Header() {
                     }}
                   >
                     {item.name}
-                    <ChevronDown 
-                      size={16} 
-                      style={{ 
+                    <ChevronDown
+                      size={16}
+                      style={{
                         transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                      }} 
+                      }}
                     />
                   </button>
-                  
+
                   {/* Dropdown Menu */}
                   {isDropdownOpen && (
                     <div

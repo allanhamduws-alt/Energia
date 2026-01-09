@@ -1,0 +1,349 @@
+/* ============================================
+   ENERGIA ANIMATION SYSTEM
+   Premium scroll-triggered animations & hover effects
+   ============================================ */
+
+/* ------------ KEYFRAMES ------------ */
+
+/* Fade and slide animations */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Floating animation for products */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+@keyframes floatSlow {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-8px) rotate(1deg);
+    }
+}
+
+/* Pulse animation for CTAs */
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 12px rgba(22, 163, 74, 0);
+    }
+}
+
+/* Counter animation */
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Shimmer effect for premium feel */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* ------------ ANIMATION CLASSES ------------ */
+
+/* Base state - elements start invisible */
+.animate-on-scroll {
+    opacity: 0;
+}
+
+.animate-on-scroll.is-visible {
+    animation: slideUp 0.6s ease-out forwards;
+}
+
+.animate-slide-left.is-visible {
+    animation: slideInLeft 0.6s ease-out forwards;
+}
+
+.animate-slide-right.is-visible {
+    animation: slideInRight 0.6s ease-out forwards;
+}
+
+.animate-scale.is-visible {
+    animation: scaleIn 0.5s ease-out forwards;
+}
+
+.animate-fade.is-visible {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Animation delays for staggered effects */
+.delay-100 {
+    animation-delay: 100ms;
+}
+
+.delay-200 {
+    animation-delay: 200ms;
+}
+
+.delay-300 {
+    animation-delay: 300ms;
+}
+
+.delay-400 {
+    animation-delay: 400ms;
+}
+
+.delay-500 {
+    animation-delay: 500ms;
+}
+
+/* ------------ FLOATING EFFECTS ------------ */
+
+.float {
+    animation: float 4s ease-in-out infinite;
+}
+
+.float-slow {
+    animation: floatSlow 6s ease-in-out infinite;
+}
+
+.float-delay-1 {
+    animation-delay: 0.5s;
+}
+
+.float-delay-2 {
+    animation-delay: 1s;
+}
+
+.float-delay-3 {
+    animation-delay: 1.5s;
+}
+
+/* ------------ HOVER EFFECTS ------------ */
+
+/* Product card hover */
+.product-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Product image hover */
+.product-image-hover {
+    transition: transform 0.4s ease;
+}
+
+.product-hover:hover .product-image-hover {
+    transform: scale(1.05) translateY(-4px);
+}
+
+/* Card lift effect */
+.card-hover {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+    border-color: var(--green-500);
+}
+
+/* Icon container hover */
+.icon-hover {
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.icon-hover:hover {
+    transform: scale(1.1);
+    background-color: var(--green-100);
+}
+
+/* Button pulse on hover */
+.btn-pulse:hover {
+    animation: pulse 1.5s infinite;
+}
+
+/* ------------ HERO IMAGE EFFECTS ------------ */
+
+.hero-image {
+    animation: floatSlow 6s ease-in-out infinite;
+    transition: transform 0.3s ease;
+}
+
+.hero-image:hover {
+    animation-play-state: paused;
+    transform: scale(1.02);
+}
+
+/* ------------ BRAND LOGO EFFECTS ------------ */
+
+.brand-logo {
+    filter: grayscale(100%);
+    opacity: 0.6;
+    transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+
+.brand-logo:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* ------------ STAT COUNTER ANIMATION ------------ */
+
+.stat-number {
+    display: inline-block;
+}
+
+.stat-number.is-visible {
+    animation: countUp 0.8s ease-out forwards;
+}
+
+/* ------------ SHIMMER LOADING EFFECT ------------ */
+
+.shimmer {
+    background: linear-gradient(90deg,
+            var(--gray-100) 25%,
+            var(--gray-50) 50%,
+            var(--gray-100) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* ------------ SECTION BACKGROUNDS ------------ */
+
+.section-accent {
+    background: linear-gradient(135deg, var(--mint-50) 0%, var(--white) 100%);
+}
+
+.section-dark {
+    background: var(--slate-900);
+    color: var(--white);
+}
+
+.section-dark h2,
+.section-dark h3 {
+    color: var(--white);
+}
+
+.section-dark p {
+    color: var(--gray-300);
+}
+
+/* ------------ GRADIENT TEXT ------------ */
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--green-600), var(--emerald-600));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ------------ GLOW EFFECTS ------------ */
+
+.glow-green {
+    box-shadow: 0 0 20px rgba(22, 163, 74, 0.3);
+}
+
+.glow-gold {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+/* Pulsing glow for decorative elements */
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+.pulse-glow {
+    animation: pulseGlow 4s ease-in-out infinite;
+}
