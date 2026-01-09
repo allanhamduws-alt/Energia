@@ -1,0 +1,230 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Admin User for Authentication
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Telefontermin-Anfragen
+model Appointment {
+  id          String   @id @default(cuid())
+  
+  // Kundendaten
+  firstName   String
+  lastName    String
+  company     String
+  email       String
+  phone       String
+  
+  // Termindetails
+  preferredDate DateTime
+  preferredTime String
+  message       String?
+  
+  // Status: pending, confirmed, declined, completed
+  status      String   @default("pending")
+  
+  // Admin Notizen
+  adminNotes  String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Deal der Woche
+model Deal {
+  id          String   @id @default(cuid())
+  
+  title       String
+  description String
+  price       String?
+  unit        String?   // z.B. "pro Stück", "pro kWp"
+  imageUrl    String?
+  
+  // Kategorie: module, inverter, battery, other
+  category    String
+  
+  // Verfügbarkeit
+  isActive    Boolean  @default(true)
+  validUntil  DateTime?
+  
+  // SEO
+  slug        String   @unique
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Anfragen zu diesem Deal
+  inquiries   DealInquiry[]
+}
+
+// Anfragen zu Deals
+model DealInquiry {
+  id          String   @id @default(cuid())
+  
+  dealId      String
+  deal        Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  
+  // Kundendaten
+  firstName   String
+  lastName    String
+  company     String
+  email       String
+  phone       String
+  message     String?
+  quantity    String?
+  
+  // Status: new, contacted, completed
+  status      String   @default("new")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Kontaktformular Anfragen
+model ContactInquiry {
+  id          String   @id @default(cuid())
+  
+  // Kundendaten
+  firstName   String
+  lastName    String
+  company     String
+  email       String
+  phone       String?
+  
+  // Anfrage
+  subject     String
+  message     String
+  
+  // Status: new, read, replied, closed
+  status      String   @default("new")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Chat-Konversationen
+model ChatConversation {
+  id          String   @id @default(cuid())
+  
+  // Besucher-Identifikation (aus LocalStorage)
+  visitorId   String
+  
+  // Optional: Kundendaten wenn angegeben
+  email       String?
+  name        String?
+  
+  // Konversation aktiv?
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  messages    ChatMessage[]
+}
+
+// Chat-Nachrichten
+model ChatMessage {
+  id             String   @id @default(cuid())
+  
+  conversationId String
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  // Rolle: user, assistant, system
+  role           String
+  content        String
+  
+  createdAt      DateTime @default(now())
+}
+
+// Seiteninhalt (CMS)
+model PageContent {
+  id          String   @id @default(cuid())
+  
+  // Seiten-Identifikation: home, about, products, etc.
+  pageKey     String   @unique
+  
+  // Inhalt als JSON
+  content     String   // JSON string
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Produkte (für Übersicht)
+model Product {
+  id          String   @id @default(cuid())
+  
+  name        String
+  description String
+  
+  // Kategorie: module, inverter, battery, accessory
+  category    String
+  
+  // Spezifikationen als JSON
+  specs       String?  // JSON string
+  
+  // Sortierung
+  sortOrder   Int      @default(0)
+  
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Marken
+model Brand {
+  id          String   @id @default(cuid())
+  
+  name        String   @unique
+  logoUrl     String?
+  website     String?
+  
+  // Sortierung
+  sortOrder   Int      @default(0)
+  
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Referenzen / Testimonials
+model Reference {
+  id          String   @id @default(cuid())
+  
+  title       String
+  description String
+  
+  // Optional: Zitat
+  quote       String?
+  quoteName   String?
+  quoteCompany String?
+  
+  // Optional: Icon-Name (z.B. "building", "truck", etc.)
+  iconName    String?
+  
+  // Sortierung
+  sortOrder   Int      @default(0)
+  
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

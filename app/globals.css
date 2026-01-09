@@ -1,26 +1,324 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core Colors - Clean & Professional */
+  --white: #ffffff;
+  --black: #000000;
+  
+  /* Grays - Subtle hierarchy */
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #e5e5e5;
+  --gray-300: #d4d4d4;
+  --gray-400: #a3a3a3;
+  --gray-500: #737373;
+  --gray-600: #525252;
+  --gray-700: #404040;
+  --gray-800: #262626;
+  --gray-900: #171717;
+  
+  /* Brand Green - Energia Primary */
+  --green-50: #f0fdf4;
+  --green-100: #dcfce7;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+  
+  /* Accent Blue - Only for "Warum Energia" section */
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  
+  /* Spacing Scale */
+  --space-section: 120px;
+  --space-section-sm: 80px;
+  --space-block: 60px;
+  --space-element: 32px;
+  --space-item: 20px;
+  
+  /* Container */
+  --container-max: 1200px;
+  --container-padding: 40px;
+  
+  /* Typography - Poppins */
+  --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  /* Border Radius */
+  --radius: 8px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--white);
 }
+
+/* ============================================
+   CONTAINER
+   ============================================ */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* ============================================
+   TYPOGRAPHY - Poppins
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--gray-900);
+}
+
+h1 {
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 700;
+}
+
+h3 {
+  font-size: clamp(1.125rem, 2vw, 1.375rem);
+  font-weight: 600;
+}
+
+p {
+  color: var(--gray-600);
+  line-height: 1.7;
+}
+
+/* ============================================
+   SECTIONS
+   ============================================ */
+.section {
+  padding-top: var(--space-section);
+  padding-bottom: var(--space-section);
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-top: var(--space-section-sm);
+    padding-bottom: var(--space-section-sm);
+  }
+}
+
+.section-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto var(--space-block);
+}
+
+.section-header p {
+  margin-top: 16px;
+  font-size: 1.0625rem;
+}
+
+/* ============================================
+   BUTTONS - Clean & Simple, No Animations
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--green-600);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--green-700);
+}
+
+.btn-secondary {
+  background: var(--gray-900);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: var(--gray-800);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--gray-300);
+  color: var(--gray-900);
+}
+
+.btn-outline:hover {
+  border-color: var(--gray-400);
+  background: var(--gray-50);
+}
+
+/* ============================================
+   CARDS - Flat Design
+   ============================================ */
+.card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card:hover {
+  border-color: var(--gray-300);
+}
+
+/* ============================================
+   PRODUCT CARDS
+   ============================================ */
+.product-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.product-card:hover {
+  border-color: var(--green-500);
+}
+
+.product-card-image {
+  aspect-ratio: 4/3;
+  background: var(--gray-100);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+}
+
+.product-card-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.spec-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--gray-100);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--gray-700);
+}
+
+.product-card-price {
+  padding-top: 16px;
+  border-top: 1px solid var(--gray-200);
+  font-size: 14px;
+  color: var(--gray-500);
+}
+
+/* ============================================
+   LINKS
+   ============================================ */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-green { color: var(--green-600); }
+.text-gray { color: var(--gray-600); }
+.text-sm { font-size: 14px; }
+.text-lg { font-size: 18px; }
+
+.mt-4 { margin-top: 16px; }
+.mt-6 { margin-top: 24px; }
+.mt-8 { margin-top: 32px; }
+.mt-12 { margin-top: 48px; }
+.mt-16 { margin-top: 64px; }
+.mt-20 { margin-top: 80px; }
+
+.mb-4 { margin-bottom: 16px; }
+.mb-6 { margin-bottom: 24px; }
+.mb-8 { margin-bottom: 32px; }
+.mb-12 { margin-bottom: 48px; }
+.mb-16 { margin-bottom: 64px; }
+
+.gap-4 { gap: 16px; }
+.gap-6 { gap: 24px; }
+.gap-8 { gap: 32px; }
+.gap-12 { gap: 48px; }
+
+/* Grid */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Flex utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.flex-wrap { flex-wrap: wrap; }
