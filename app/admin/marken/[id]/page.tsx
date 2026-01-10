@@ -223,7 +223,7 @@ export default function AdminMarkeBearbeitenPage() {
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                   placeholder="z.B. aiko"
                   required
-                  helperText="Nur Kleinbuchstaben, Zahlen und Bindestriche."
+                  hint="Nur Kleinbuchstaben, Zahlen und Bindestriche."
                 />
 
                 <Input
@@ -336,7 +336,7 @@ export default function AdminMarkeBearbeitenPage() {
                   value={formData.sortOrder}
                   onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
                   placeholder="0"
-                  helperText="Niedrigere Werte werden zuerst angezeigt"
+                  hint="Niedrigere Werte werden zuerst angezeigt"
                 />
               </div>
 
