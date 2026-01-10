@@ -237,7 +237,7 @@ export default function AdminMarkenPage() {
                         <div className="flex items-center gap-4 text-sm text-foreground-muted">
                           <span className="flex items-center gap-1">
                             <Package className="w-4 h-4" />
-                            {brand.products?.length || 0} Produkte
+                            {brand._count?.products || 0} Produkte
                           </span>
                           {brand.website && (
                             <a 
