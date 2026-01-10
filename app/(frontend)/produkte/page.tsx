@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useScrollAnimation, useScrollAnimationGroup } from '@/lib/useScrollAnimation'
 import { useInquiryCart } from '@/components/inquiry'
@@ -142,6 +142,40 @@ interface Product {
 }
 
 export default function ProduktePage() {
+  return (
+    <Suspense fallback={<ProdukteLoading />}>
+      <ProdukteContent />
+    </Suspense>
+  )
+}
+
+function ProdukteLoading() {
+  return (
+    <main style={{ paddingTop: '80px', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div
+          style={{
+            width: '48px',
+            height: '48px',
+            border: '3px solid var(--gray-200)',
+            borderTopColor: 'var(--green-600)',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 16px',
+          }}
+        />
+        <p style={{ color: 'var(--gray-500)' }}>Produkte werden geladen...</p>
+        <style jsx>{`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    </main>
+  )
+}
+
+function ProdukteContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [activeCategory, setActiveCategory] = useState('module')
