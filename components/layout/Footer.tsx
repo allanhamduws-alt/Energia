@@ -365,7 +365,7 @@ export function Footer() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style jsx global>{`
         .footer-wrapper {
           background: #0f172a;
         }
