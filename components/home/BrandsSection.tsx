@@ -2,119 +2,33 @@
 
 import Image from 'next/image'
 
-// Brand data with colors and logo paths
+// Brand data with logo paths
 const brands = [
-  { name: 'SMA', color: '#CC0000', hasImage: false },
-  { name: 'Sungrow', color: '#E31937', hasImage: false },
-  { name: 'Huawei', color: '#E31937', hasImage: true, logo: '/images/brands/huawei-logo.svg' },
-  { name: 'AIKO', color: '#00A651', hasImage: false },
-  { name: 'BYD', color: '#E31937', hasImage: false, isOval: true },
-  { name: 'Kostal', color: '#003087', hasImage: false },
-  { name: 'JA Solar', color: '#F7931E', hasImage: false },
-  { name: 'Trina Solar', color: '#1E3799', hasImage: false },
-  { name: 'LONGi', color: '#00A950', hasImage: false },
-  { name: 'Canadian Solar', color: '#003366', hasImage: false, hasStar: true },
+  { name: 'SMA', logo: '/images/brands/Logo_SMA..png' },
+  { name: 'Sungrow', logo: '/images/brands/sungrow.svg' },
+  { name: 'Huawei', logo: '/images/brands/huawei-logo.svg' },
+  { name: 'AIKO', logo: '/images/brands/Aiko.png' },
+  { name: 'BYD', logo: '/images/brands/BYD.svg' },
+  { name: 'Kostal', logo: '/images/brands/kostal.png' },
+  { name: 'JA Solar', logo: '/images/brands/JA_Solar.png' },
+  { name: 'Trina Solar', logo: '/images/brands/Trina_Solar.png' },
+  { name: 'LONGi', logo: '/images/brands/longi-solar.png' },
+  { name: 'Canadian Solar', logo: '/images/brands/Canadian_Solar.svg' },
 ]
 
-// Brand Logo Component - uses real logos where available, styled text for others
+// Brand Logo Component - uses real logo images
 function BrandLogo({ brand }: { brand: typeof brands[0] }) {
-  if (brand.hasImage && brand.logo) {
-    return (
-      <div style={{ height: 32, display: 'flex', alignItems: 'center' }}>
-        <Image
-          src={brand.logo}
-          alt={brand.name}
-          width={120}
-          height={32}
-          style={{ height: 28, width: 'auto', objectFit: 'contain' }}
-          unoptimized
-        />
-      </div>
-    )
-  }
-
-  // Special styling for certain brands
-  if (brand.name === 'SMA') {
-    return (
-      <div style={{
-        background: brand.color,
-        padding: '8px 20px',
-        borderRadius: '4px',
-        display: 'flex',
-        alignItems: 'center',
-      }}>
-        <span style={{
-          color: 'white',
-          fontSize: '18px',
-          fontWeight: 700,
-          letterSpacing: '2px',
-        }}>
-          SMA
-        </span>
-      </div>
-    )
-  }
-
-  if (brand.name === 'BYD') {
-    return (
-      <div style={{
-        background: brand.color,
-        padding: '6px 24px',
-        borderRadius: '50px',
-        display: 'flex',
-        alignItems: 'center',
-      }}>
-        <span style={{
-          color: 'white',
-          fontSize: '18px',
-          fontWeight: 700,
-          letterSpacing: '1px',
-        }}>
-          BYD
-        </span>
-      </div>
-    )
-  }
-
-  if (brand.name === 'Canadian Solar') {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <div style={{
-          width: 24,
-          height: 24,
-          borderRadius: '50%',
-          background: '#E31937',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-            <path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6.4-4.8-6.4 4.8 2.4-7.2-6-4.8h7.6z" />
-          </svg>
-        </div>
-        <span style={{
-          color: brand.color,
-          fontSize: '16px',
-          fontWeight: 700,
-          whiteSpace: 'nowrap',
-        }}>
-          Canadian Solar
-        </span>
-      </div>
-    )
-  }
-
-  // Default text logo with brand color
   return (
-    <span style={{
-      color: brand.color,
-      fontSize: '18px',
-      fontWeight: 700,
-      whiteSpace: 'nowrap',
-      letterSpacing: brand.name === 'SUNGROW' ? '1px' : '0',
-    }}>
-      {brand.name}
-    </span>
+    <div style={{ height: 36, display: 'flex', alignItems: 'center' }}>
+      <Image
+        src={brand.logo}
+        alt={brand.name}
+        width={140}
+        height={36}
+        style={{ height: 32, width: 'auto', objectFit: 'contain', maxWidth: '140px' }}
+        unoptimized
+      />
+    </div>
   )
 }
 
@@ -229,7 +143,6 @@ export function BrandsSection() {
           background: #ffffff;
           border-color: #e0e0e0;
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-          transform: scale(1.03);
         }
         
         @keyframes brand-scroll {

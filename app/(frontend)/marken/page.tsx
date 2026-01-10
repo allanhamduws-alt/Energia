@@ -1,87 +1,108 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
+import { useState, useEffect } from 'react'
 import { useScrollAnimation, useScrollAnimationGroup } from '@/lib/useScrollAnimation'
 
-const brands = [
-  {
-    name: 'SMA',
-    category: 'Wechselrichter & Speicher',
-    logo: 'SMA',
-    color: '#cc0000',
-    description: 'Deutscher Premium-Hersteller für Wechselrichter und Energiemanagement-Systeme. Weltmarktführer mit über 40 Jahren Erfahrung.',
-    highlights: ['Made in Germany', 'Weltmarktführer', '40+ Jahre Erfahrung'],
-    products: ['Sunny Tripower', 'Sunny Boy Storage', 'CORE2'],
-  },
-  {
-    name: 'Sungrow',
-    category: 'Wechselrichter & Speicher',
-    logo: 'Sungrow',
-    color: '#ed1c24',
-    description: 'Einer der weltweit größten Hersteller von Wechselrichtern und Speichersystemen. Innovative Lösungen für alle Anlagengrößen.',
-    highlights: ['Global Player', 'Innovation Leader', 'Breites Portfolio'],
-    products: ['SH5.0RS', 'SG10RT', 'SBR128 Speicher'],
-  },
-  {
-    name: 'Huawei',
-    category: 'Wechselrichter & Speicher',
-    logo: 'HUAWEI',
-    color: '#cf0a2c',
-    description: 'Technologieführer mit intelligenten PV-Lösungen. Bekannt für höchste Wirkungsgrade und Smart-PV-Integration.',
-    highlights: ['Höchste Effizienz', 'Smart Integration', 'KI-Optimierung'],
-    products: ['SUN2000', 'LUNA2000', 'Smart Logger'],
-  },
-  {
-    name: 'AIKO',
-    category: 'Solarmodule',
-    logo: 'AIKO',
-    color: '#00a651',
-    description: 'Innovativer Modulhersteller mit Fokus auf hocheffiziente Solarzellen. ABC-Technologie für maximale Leistung.',
-    highlights: ['ABC-Technologie', 'N-Type Zellen', 'Premium Qualität'],
-    products: ['Neostar 2S', 'A475-MAH54Dw', 'Fullblack Module'],
-  },
-  {
-    name: 'BYD',
-    category: 'Batteriespeicher',
-    logo: 'BYD',
-    color: '#1a63b1',
-    description: 'Führender Hersteller von Batteriespeichern mit LiFePO4-Technologie. Bekannt für Sicherheit und Langlebigkeit.',
-    highlights: ['LiFePO4', 'Höchste Sicherheit', 'Modular skalierbar'],
-    products: ['Battery-Box Premium HVS', 'Battery-Box LV Flex', 'HVM Series'],
-  },
-  {
-    name: 'Kostal',
-    category: 'Wechselrichter',
-    logo: 'KOSTAL',
-    color: '#004990',
-    description: 'Deutscher Hersteller für Wechselrichter und Energiemanagement. Kompakte Lösungen mit hoher Effizienz.',
-    highlights: ['Made in Germany', 'Kompakt', 'Smart Energy'],
-    products: ['PLENTICORE plus', 'PIKO MP plus', 'Smart Energy Meter'],
-  },
-  {
-    name: 'JA Solar',
-    category: 'Solarmodule',
-    logo: 'JA Solar',
-    color: '#f7931e',
-    description: 'Einer der weltweit größten Modulhersteller. Bekannt für zuverlässige Qualität und hervorragendes Preis-Leistungs-Verhältnis.',
-    highlights: ['Top 3 Weltweit', 'DeepBlue Serie', 'Bifazial Experte'],
-    products: ['JAM72D30', 'DeepBlue 4.0', 'Tiger Neo'],
-  },
-  {
-    name: 'Trina Solar',
-    category: 'Solarmodule',
-    logo: 'Trina',
-    color: '#1e3799',
-    description: 'Globaler Technologieführer in der PV-Branche. Vertex-Module setzen neue Maßstäbe in Effizienz und Leistung.',
-    highlights: ['Vertex Technologie', 'Tier 1 Hersteller', '25+ Jahre Erfahrung'],
-    products: ['Vertex S+', 'Vertex N', 'TSM-NEG9R.28'],
-  },
-]
+interface Brand {
+  id: string
+  name: string
+  slug: string
+  logoUrl: string | null
+  description: string | null
+  website: string | null
+  categories: string[]
+  highlights: string[]
+  sortOrder: number
+  isActive: boolean
+  products?: {
+    id: string
+    name: string
+    category: string
+  }[]
+}
+
+const categoryLabels: { [key: string]: string } = {
+  module: 'Solarmodule',
+  wechselrichter: 'Wechselrichter',
+  speicher: 'Speicher',
+}
+
+// Fallback colors for brands
+const brandColors: { [key: string]: string } = {
+  sma: '#cc0000',
+  sungrow: '#ed1c24',
+  huawei: '#cf0a2c',
+  aiko: '#00a651',
+  byd: '#1a63b1',
+  kostal: '#004990',
+  'ja-solar': '#f7931e',
+  'trina-solar': '#1e3799',
+  longi: '#00A950',
+  'canadian-solar': '#003366',
+}
 
 export default function MarkenPage() {
   const [heroRef, heroVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.1 })
-  const [logoGridRef, logoGridVisible] = useScrollAnimationGroup(brands.length, { threshold: 0.1 })
   const [ctaRef, ctaVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.2 })
+  const [brands, setBrands] = useState<Brand[]>([])
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState({ brands: 0, products: 0 })
+
+  // Fetch brands with products
+  useEffect(() => {
+    async function fetchBrands() {
+      try {
+        const [brandsRes, productsRes] = await Promise.all([
+          fetch('/api/brands?withProducts=true'),
+          fetch('/api/products'),
+        ])
+        
+        const brandsData = await brandsRes.json()
+        const productsData = await productsRes.json()
+        
+        setBrands(brandsData)
+        setStats({
+          brands: brandsData.length,
+          products: productsData.length,
+        })
+      } catch (error) {
+        console.error('Error fetching brands:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchBrands()
+  }, [])
+
+  const [logoGridRef, logoGridVisible] = useScrollAnimationGroup(brands.length, { threshold: 0.1 })
+
+  if (loading) {
+    return (
+      <main style={{ paddingTop: '80px', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div
+            style={{
+              width: '48px',
+              height: '48px',
+              border: '3px solid var(--gray-200)',
+              borderTopColor: 'var(--green-600)',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 16px',
+            }}
+          />
+          <p style={{ color: 'var(--gray-500)' }}>Marken werden geladen...</p>
+          <style jsx>{`
+            @keyframes spin {
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main style={{ paddingTop: '80px' }}>
@@ -187,52 +208,66 @@ export default function MarkenPage() {
       </section>
 
       {/* Logo Showcase Banner */}
-      <section
-        style={{
-          padding: '60px 0',
-          background: 'white',
-          borderBottom: '1px solid var(--gray-200)',
-        }}
-      >
-        <div className="container">
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              gap: '40px',
-            }}
-          >
-            {brands.slice(0, 6).map((brand) => (
-              <a
-                key={brand.name}
-                href={`#${brand.name.toLowerCase()}`}
-                className="brand-logo"
-                style={{
-                  padding: '20px 30px',
-                  fontSize: '1.5rem',
-                  fontWeight: 700,
-                  color: 'var(--gray-700)',
-                  textDecoration: 'none',
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = brand.color
-                  e.currentTarget.style.filter = 'grayscale(0%)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'var(--gray-700)'
-                  e.currentTarget.style.filter = 'grayscale(100%)'
-                }}
-              >
-                {brand.logo}
-              </a>
-            ))}
+      {brands.length > 0 && (
+        <section
+          style={{
+            padding: '60px 0',
+            background: 'white',
+            borderBottom: '1px solid var(--gray-200)',
+          }}
+        >
+          <div className="container">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                gap: '40px',
+              }}
+            >
+              {brands.slice(0, 6).map((brand) => (
+                <Link
+                  key={brand.id}
+                  href={`/produkte?marke=${brand.slug}`}
+                  className="brand-logo"
+                  style={{
+                    padding: '20px 30px',
+                    textDecoration: 'none',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
+                    filter: 'grayscale(100%)',
+                    opacity: 0.7,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.filter = 'grayscale(0%)'
+                    e.currentTarget.style.opacity = '1'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.filter = 'grayscale(100%)'
+                    e.currentTarget.style.opacity = '0.7'
+                  }}
+                >
+                  {brand.logoUrl ? (
+                    <Image
+                      src={brand.logoUrl}
+                      alt={brand.name}
+                      width={120}
+                      height={40}
+                      style={{ height: 36, width: 'auto', objectFit: 'contain' }}
+                      unoptimized
+                    />
+                  ) : (
+                    <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--gray-700)' }}>
+                      {brand.name}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Brands Grid */}
       <section
@@ -279,156 +314,210 @@ export default function MarkenPage() {
               gap: '28px',
             }}
           >
-            {brands.map((brand, index) => (
-              <div
-                key={brand.name}
-                id={brand.name.toLowerCase()}
-                className="card-hover"
-                style={{
-                  background: 'white',
-                  border: '1px solid var(--gray-200)',
-                  borderRadius: '20px',
-                  overflow: 'hidden',
-                  opacity: logoGridVisible[index] ? 1 : 0,
-                  transform: logoGridVisible[index] ? 'translateY(0)' : 'translateY(30px)',
-                  transition: `all 0.6s ease-out ${index * 0.08}s`,
-                }}
-              >
-                {/* Brand Header with Logo */}
+            {brands.map((brand, index) => {
+              const brandColor = brandColors[brand.slug] || '#16a34a'
+              const categoryLabelsForBrand = brand.categories.map(cat => categoryLabels[cat] || cat).join(' & ')
+              
+              return (
                 <div
+                  key={brand.id}
+                  id={brand.slug}
+                  className="card-hover"
                   style={{
-                    padding: '32px',
-                    background: `linear-gradient(135deg, ${brand.color}15 0%, ${brand.color}05 100%)`,
-                    borderBottom: '1px solid var(--gray-100)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
+                    background: 'white',
+                    border: '1px solid var(--gray-200)',
+                    borderRadius: '20px',
+                    overflow: 'hidden',
+                    opacity: logoGridVisible[index] ? 1 : 0,
+                    transform: logoGridVisible[index] ? 'translateY(0)' : 'translateY(30px)',
+                    transition: `all 0.6s ease-out ${index * 0.08}s`,
                   }}
                 >
+                  {/* Brand Header with Logo */}
                   <div
                     style={{
+                      padding: '32px',
+                      background: `linear-gradient(135deg, ${brandColor}15 0%, ${brandColor}05 100%)`,
+                      borderBottom: '1px solid var(--gray-100)',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '16px',
+                      justifyContent: 'space-between',
                     }}
                   >
-                    {/* Logo Text */}
-                    <div
-                      style={{
-                        fontSize: '1.75rem',
-                        fontWeight: 800,
-                        color: brand.color,
-                        letterSpacing: '-0.5px',
-                      }}
-                    >
-                      {brand.logo}
-                    </div>
-                  </div>
-                  <span
-                    style={{
-                      padding: '6px 14px',
-                      background: 'white',
-                      borderRadius: '999px',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: 'var(--gray-600)',
-                      border: '1px solid var(--gray-200)',
-                    }}
-                  >
-                    {brand.category}
-                  </span>
-                </div>
-
-                {/* Brand Content */}
-                <div style={{ padding: '28px 32px' }}>
-                  <p
-                    style={{
-                      fontSize: '15px',
-                      color: 'var(--gray-600)',
-                      lineHeight: 1.7,
-                      marginBottom: '24px',
-                    }}
-                  >
-                    {brand.description}
-                  </p>
-
-                  {/* Highlights */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: '8px',
-                      marginBottom: '24px',
-                    }}
-                  >
-                    {brand.highlights.map((highlight, i) => (
-                      <span
-                        key={i}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          padding: '6px 12px',
-                          background: 'var(--green-50)',
-                          borderRadius: '8px',
-                          fontSize: '13px',
-                          fontWeight: 500,
-                          color: 'var(--green-700)',
-                        }}
-                      >
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                          <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        {highlight}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Products */}
-                  <div
-                    style={{
-                      paddingTop: '20px',
-                      borderTop: '1px solid var(--gray-100)',
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        color: 'var(--gray-500)',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        marginBottom: '12px',
-                      }}
-                    >
-                      Top Produkte
-                    </p>
                     <div
                       style={{
                         display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '8px',
+                        alignItems: 'center',
+                        gap: '16px',
+                        height: '48px',
                       }}
                     >
-                      {brand.products.map((product, i) => (
-                        <span
-                          key={i}
+                      {/* Logo Image */}
+                      {brand.logoUrl ? (
+                        <Image
+                          src={brand.logoUrl}
+                          alt={brand.name}
+                          width={160}
+                          height={48}
+                          style={{ height: 40, width: 'auto', objectFit: 'contain', maxWidth: '160px' }}
+                          unoptimized
+                        />
+                      ) : (
+                        <span style={{ fontSize: '1.5rem', fontWeight: 700, color: brandColor }}>
+                          {brand.name}
+                        </span>
+                      )}
+                    </div>
+                    <span
+                      style={{
+                        padding: '6px 14px',
+                        background: 'white',
+                        borderRadius: '999px',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: 'var(--gray-600)',
+                        border: '1px solid var(--gray-200)',
+                      }}
+                    >
+                      {categoryLabelsForBrand}
+                    </span>
+                  </div>
+
+                  {/* Brand Content */}
+                  <div style={{ padding: '28px 32px' }}>
+                    {brand.description && (
+                      <p
+                        style={{
+                          fontSize: '15px',
+                          color: 'var(--gray-600)',
+                          lineHeight: 1.7,
+                          marginBottom: '24px',
+                        }}
+                      >
+                        {brand.description}
+                      </p>
+                    )}
+
+                    {/* Highlights */}
+                    {brand.highlights && brand.highlights.length > 0 && (
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: '8px',
+                          marginBottom: '24px',
+                        }}
+                      >
+                        {brand.highlights.map((highlight, i) => (
+                          <span
+                            key={i}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '6px 12px',
+                              background: 'var(--green-50)',
+                              borderRadius: '8px',
+                              fontSize: '13px',
+                              fontWeight: 500,
+                              color: 'var(--green-700)',
+                            }}
+                          >
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                              <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            {highlight}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Products Preview */}
+                    {brand.products && brand.products.length > 0 && (
+                      <div
+                        style={{
+                          paddingTop: '20px',
+                          borderTop: '1px solid var(--gray-100)',
+                        }}
+                      >
+                        <p
                           style={{
-                            padding: '6px 12px',
-                            background: 'var(--gray-100)',
-                            borderRadius: '6px',
-                            fontSize: '13px',
-                            color: 'var(--gray-700)',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            color: 'var(--gray-500)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            marginBottom: '12px',
                           }}
                         >
-                          {product}
-                        </span>
-                      ))}
-                    </div>
+                          Top Produkte ({brand.products.length})
+                        </p>
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '8px',
+                            marginBottom: '16px',
+                          }}
+                        >
+                          {brand.products.slice(0, 3).map((product) => (
+                            <span
+                              key={product.id}
+                              style={{
+                                padding: '6px 12px',
+                                background: 'var(--gray-100)',
+                                borderRadius: '6px',
+                                fontSize: '13px',
+                                color: 'var(--gray-700)',
+                              }}
+                            >
+                              {product.name}
+                            </span>
+                          ))}
+                          {brand.products.length > 3 && (
+                            <span
+                              style={{
+                                padding: '6px 12px',
+                                background: 'var(--gray-100)',
+                                borderRadius: '6px',
+                                fontSize: '13px',
+                                color: 'var(--gray-500)',
+                              }}
+                            >
+                              +{brand.products.length - 3} weitere
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* CTA Button */}
+                    <Link
+                      href={`/produkte?marke=${brand.slug}`}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        padding: '12px 20px',
+                        background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}dd 100%)`,
+                        color: 'white',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        borderRadius: '10px',
+                        textDecoration: 'none',
+                        transition: 'all 0.3s ease',
+                      }}
+                    >
+                      Produkte von {brand.name} ansehen
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </Link>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
@@ -449,8 +538,8 @@ export default function MarkenPage() {
               textAlign: 'center',
             }}
           >
-            <StatItem value="8+" label="Premium Marken" />
-            <StatItem value="100+" label="Produkte verfügbar" />
+            <StatItem value={`${stats.brands}+`} label="Premium Marken" />
+            <StatItem value={`${stats.products}+`} label="Produkte verfügbar" />
             <StatItem value="50+" label="MW verbaut" />
             <StatItem value="10+" label="Jahre Erfahrung" />
           </div>
@@ -570,7 +659,7 @@ export default function MarkenPage() {
                 transition: 'all 0.3s ease',
               }}
             >
-              Produkte ansehen
+              Alle Produkte ansehen
             </Link>
           </div>
         </div>

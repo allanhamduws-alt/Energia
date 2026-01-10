@@ -14,15 +14,29 @@ export function useScrollAnimation<T extends HTMLElement = HTMLDivElement>(
   const { threshold = 0.1, rootMargin = '0px', triggerOnce = true } = options
   const ref = useRef<T>(null)
   const [isVisible, setIsVisible] = useState(false)
+  const hasTriggered = useRef(false)
 
   useEffect(() => {
     const element = ref.current
-    if (!element) return
+    if (!element || hasTriggered.current) return
+
+    // Check if element is already in viewport on mount
+    const rect = element.getBoundingClientRect()
+    const isInViewport = rect.top < window.innerHeight && rect.bottom > 0
+    if (isInViewport) {
+      // Use setTimeout to ensure CSS transitions work after hydration
+      setTimeout(() => {
+        setIsVisible(true)
+        hasTriggered.current = true
+      }, 50)
+      if (triggerOnce) return
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !hasTriggered.current) {
           setIsVisible(true)
+          hasTriggered.current = true
           if (triggerOnce) {
             observer.unobserve(element)
           }
@@ -53,24 +67,39 @@ export function useScrollAnimationGroup(
     Array(count).fill(false)
   )
   const { threshold = 0.1, rootMargin = '0px', triggerOnce = true } = options
+  const hasTriggered = useRef(false)
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container) return
+    if (!container || hasTriggered.current) return
+
+    const triggerStaggeredAnimation = () => {
+      hasTriggered.current = true
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          setVisibleItems((prev) => {
+            const next = [...prev]
+            next[i] = true
+            return next
+          })
+        }, i * 100) // 100ms delay between each item
+      }
+    }
+
+    // Check if element is already in viewport on mount
+    const rect = container.getBoundingClientRect()
+    const isInViewport = rect.top < window.innerHeight && rect.bottom > 0
+    if (isInViewport) {
+      setTimeout(() => {
+        triggerStaggeredAnimation()
+      }, 50)
+      if (triggerOnce) return
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          // Stagger the animations
-          for (let i = 0; i < count; i++) {
-            setTimeout(() => {
-              setVisibleItems((prev) => {
-                const next = [...prev]
-                next[i] = true
-                return next
-              })
-            }, i * 100) // 100ms delay between each item
-          }
+        if (entry.isIntersecting && !hasTriggered.current) {
+          triggerStaggeredAnimation()
           if (triggerOnce) {
             observer.unobserve(container)
           }

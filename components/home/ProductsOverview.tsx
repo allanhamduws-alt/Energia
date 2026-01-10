@@ -1,6 +1,13 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+
+interface ProductStats {
+  module: number
+  wechselrichter: number
+  speicher: number
+}
 
 const products = [
   {
@@ -8,7 +15,8 @@ const products = [
     title: 'Solarmodule',
     description: 'Hocheffiziente Module von führenden Herstellern',
     specs: ['Bis 700W', 'N-Type & P-Type', 'Bifazial'],
-    category: 'Solarmodul',
+    category: 'module',
+    categoryLabel: 'Solarmodul',
     href: '/produkte#module',
     icon: (
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -25,7 +33,8 @@ const products = [
     title: 'Wechselrichter',
     description: 'String- und Hybrid-Wechselrichter aller Leistungsklassen',
     specs: ['3-50 kW', 'Hybrid & String', 'Smart Grid'],
-    category: 'Wechselrichter',
+    category: 'wechselrichter',
+    categoryLabel: 'Wechselrichter',
     href: '/produkte#wechselrichter',
     icon: (
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -40,7 +49,8 @@ const products = [
     title: 'Speicher',
     description: 'Batteriespeicher für Eigenverbrauchsoptimierung',
     specs: ['5-100 kWh', 'LFP Technologie', 'Modular'],
-    category: 'Speicher',
+    category: 'speicher',
+    categoryLabel: 'Speicher',
     href: '/produkte#speicher',
     icon: (
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -55,6 +65,30 @@ const products = [
 ]
 
 export function ProductsOverview() {
+  const [stats, setStats] = useState<ProductStats>({ module: 0, wechselrichter: 0, speicher: 0 })
+
+  // Fetch product counts from API
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/products')
+        const productsData = await res.json()
+        
+        const counts: ProductStats = { module: 0, wechselrichter: 0, speicher: 0 }
+        productsData.forEach((product: { category: string }) => {
+          if (counts[product.category as keyof ProductStats] !== undefined) {
+            counts[product.category as keyof ProductStats]++
+          }
+        })
+        
+        setStats(counts)
+      } catch (error) {
+        console.error('Error fetching product stats:', error)
+      }
+    }
+    fetchStats()
+  }, [])
+
   return (
     <section style={{ paddingTop: '100px', paddingBottom: '100px', background: '#f5f5f5' }}>
       <div className="container">
@@ -123,110 +157,129 @@ export function ProductsOverview() {
           }}
           className="products-grid"
         >
-          {products.map((product) => (
-            <Link
-              key={product.id}
-              href={product.href}
-              style={{
-                display: 'block',
-                background: 'white',
-                border: '1px solid #e5e5e5',
-                borderRadius: '12px',
-                padding: '32px',
-                height: '100%',
-              }}
-              className="product-link"
-            >
-              {/* Product Icon */}
-              <div
+          {products.map((product) => {
+            const productCount = stats[product.category as keyof ProductStats] || 0
+            return (
+              <Link
+                key={product.id}
+                href={product.href}
                 style={{
-                  width: '80px',
-                  height: '80px',
-                  background: '#f0fdf4',
+                  display: 'block',
+                  background: 'white',
+                  border: '1px solid #e5e5e5',
                   borderRadius: '12px',
-                  marginBottom: '24px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  padding: '32px',
+                  height: '100%',
                 }}
+                className="product-link"
               >
-                {product.icon}
-              </div>
-
-              {/* Category Badge */}
-              <span
-                style={{
-                  display: 'inline-block',
-                  padding: '4px 10px',
-                  background: '#f0fdf4',
-                  color: '#16a34a',
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  borderRadius: '4px',
-                  marginBottom: '12px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                }}
-              >
-                {product.category}
-              </span>
-
-              {/* Product Info */}
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#171717', marginBottom: '8px' }}>
-                {product.title}
-              </h3>
-              <p style={{ fontSize: '14px', color: '#737373', marginBottom: '20px', lineHeight: 1.6 }}>
-                {product.description}
-              </p>
-
-              {/* Specs Tags */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
-                {product.specs.map((spec, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      padding: '6px 12px',
-                      background: '#f5f5f5',
-                      borderRadius: '6px',
-                      fontSize: '13px',
-                      color: '#525252',
-                      fontWeight: 500,
-                    }}
-                  >
-                    {spec}
-                  </span>
-                ))}
-              </div>
-
-              {/* CTA */}
-              <div style={{ 
-                paddingTop: '20px', 
-                borderTop: '1px solid #f5f5f5', 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center' 
-              }}>
-                <span style={{ fontSize: '14px', color: '#16a34a', fontWeight: 600 }}>
-                  Preis anfragen
-                </span>
+                {/* Product Icon */}
                 <div
                   style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
+                    width: '80px',
+                    height: '80px',
                     background: '#f0fdf4',
+                    borderRadius: '12px',
+                    marginBottom: '24px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
                 >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  {product.icon}
                 </div>
-              </div>
-            </Link>
-          ))}
+
+                {/* Category Badge with Count */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      padding: '4px 10px',
+                      background: '#f0fdf4',
+                      color: '#16a34a',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      borderRadius: '4px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    {product.categoryLabel}
+                  </span>
+                  {productCount > 0 && (
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '4px 10px',
+                        background: '#f5f5f5',
+                        color: '#525252',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        borderRadius: '4px',
+                      }}
+                    >
+                      {productCount} Produkte
+                    </span>
+                  )}
+                </div>
+
+                {/* Product Info */}
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#171717', marginBottom: '8px' }}>
+                  {product.title}
+                </h3>
+                <p style={{ fontSize: '14px', color: '#737373', marginBottom: '20px', lineHeight: 1.6 }}>
+                  {product.description}
+                </p>
+
+                {/* Specs Tags */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
+                  {product.specs.map((spec, i) => (
+                    <span
+                      key={i}
+                      style={{
+                        padding: '6px 12px',
+                        background: '#f5f5f5',
+                        borderRadius: '6px',
+                        fontSize: '13px',
+                        color: '#525252',
+                        fontWeight: 500,
+                      }}
+                    >
+                      {spec}
+                    </span>
+                  ))}
+                </div>
+
+                {/* CTA */}
+                <div style={{ 
+                  paddingTop: '20px', 
+                  borderTop: '1px solid #f5f5f5', 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center' 
+                }}>
+                  <span style={{ fontSize: '14px', color: '#16a34a', fontWeight: 600 }}>
+                    Preis anfragen
+                  </span>
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      background: '#f0fdf4',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
         </div>
       </div>
 

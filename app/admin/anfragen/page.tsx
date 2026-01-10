@@ -103,7 +103,7 @@ export default function AdminAnfragenPage() {
     <div className="min-h-screen bg-background-secondary">
       <AdminSidebar />
       
-      <main className="lg:ml-64 p-6">
+      <main className="pt-20 xl:pt-6 xl:ml-64 px-4 sm:px-6 pb-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">

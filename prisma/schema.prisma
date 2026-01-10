@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -166,43 +166,70 @@ model PageContent {
   updatedAt   DateTime @updatedAt
 }
 
-// Produkte (für Übersicht)
-model Product {
-  id          String   @id @default(cuid())
-  
-  name        String
-  description String
-  
-  // Kategorie: module, inverter, battery, accessory
-  category    String
-  
-  // Spezifikationen als JSON
-  specs       String?  // JSON string
-  
-  // Sortierung
-  sortOrder   Int      @default(0)
-  
-  isActive    Boolean  @default(true)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
 // Marken
 model Brand {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   
-  name        String   @unique
+  name        String    @unique
+  slug        String    @unique
   logoUrl     String?
+  description String?
   website     String?
   
+  // Kategorien die diese Marke anbietet: JSON Array ["module", "wechselrichter", "speicher"]
+  categories  String    @default("[]")
+  
+  // Highlights: JSON Array ["Made in Germany", "Premium"]
+  highlights  String?
+  
   // Sortierung
-  sortOrder   Int      @default(0)
+  sortOrder   Int       @default(0)
   
-  isActive    Boolean  @default(true)
+  isActive    Boolean   @default(true)
   
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  // Relation zu Produkten
+  products    Product[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// Produkte
+model Product {
+  id            String   @id @default(cuid())
+  
+  name          String
+  subtitle      String
+  
+  // Kategorie: "module" | "wechselrichter" | "speicher"
+  category      String
+  
+  // Marke Relation
+  brandId       String
+  brand         Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  
+  // Bild
+  imageUrl      String?
+  
+  // Spezifikationen: JSON Array ["475W", "Fullblack", "N-Type"]
+  specs         String   @default("[]")
+  
+  // Detaillierte Specs: JSON Object {"Nennleistung": "475 Wp", ...}
+  detailedSpecs String   @default("{}")
+  
+  // Einheit für Anfragen
+  unit          String   @default("Stück")
+  
+  // Für Startseite hervorheben
+  featured      Boolean  @default(false)
+  
+  // Sortierung
+  sortOrder     Int      @default(0)
+  
+  isActive      Boolean  @default(true)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 // Referenzen / Testimonials
@@ -224,6 +251,31 @@ model Reference {
   sortOrder   Int      @default(0)
   
   isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Produktanfragen (Warenkorb-System)
+model ProductInquiry {
+  id          String   @id @default(cuid())
+  
+  // Kundendaten
+  firstName   String
+  lastName    String
+  company     String
+  email       String
+  phone       String
+  message     String?
+  
+  // Produkte als JSON (Array von Produkten mit Menge)
+  products    String   // JSON: [{name, subtitle, category, quantity, unit, specs}]
+  
+  // Status: new, contacted, quoted, completed
+  status      String   @default("new")
+  
+  // Admin Notizen
+  adminNotes  String?
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

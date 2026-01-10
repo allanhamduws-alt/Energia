@@ -2,83 +2,263 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { useState, useEffect, useMemo } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useScrollAnimation, useScrollAnimationGroup } from '@/lib/useScrollAnimation'
+import { useInquiryCart } from '@/components/inquiry'
 
-const categories = [
-  {
-    id: 'module',
+// SVG Icons for categories
+const SolarIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="4"/>
+    <path d="M12 2v2"/>
+    <path d="M12 20v2"/>
+    <path d="M4.93 4.93l1.41 1.41"/>
+    <path d="M17.66 17.66l1.41 1.41"/>
+    <path d="M2 12h2"/>
+    <path d="M20 12h2"/>
+    <path d="M6.34 17.66l-1.41 1.41"/>
+    <path d="M19.07 4.93l-1.41 1.41"/>
+  </svg>
+)
+
+const InverterIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+  </svg>
+)
+
+const BatteryIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="7" width="18" height="10" rx="2" ry="2"/>
+    <path d="M22 11v2"/>
+    <path d="M6 11v2"/>
+    <path d="M10 11v2"/>
+    <path d="M14 11v2"/>
+  </svg>
+)
+
+const ChevronDown = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9"/>
+  </svg>
+)
+
+const PlusIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="12" y1="5" x2="12" y2="19"/>
+    <line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+)
+
+const MinusIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+)
+
+const CheckIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+)
+
+const FilterIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+  </svg>
+)
+
+const XIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="18" y1="6" x2="6" y2="18"/>
+    <line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+)
+
+const categoryIcons: { [key: string]: React.ReactNode } = {
+  module: <SolarIcon />,
+  wechselrichter: <InverterIcon />,
+  speicher: <BatteryIcon />,
+}
+
+const categoryMeta: { [key: string]: { name: string; icon: string; gradient: string; glowColor: string; description: string; highlight: string; image: string } } = {
+  module: {
     name: 'Solarmodule',
-    icon: '☀️',
+    icon: 'module',
     image: '/images/products/solar-module.png',
     description: 'Hochwertige Solarmodule von führenden Herstellern. Monokristallin, polykristallin und bifaziale Module für alle Anwendungsbereiche.',
     highlight: 'Premium N-Type & TOPCon',
-    products: [
-      { name: 'AIKO 475W', subtitle: 'AIKO-A475-MAH54Dw', specs: ['475W', 'Fullblack', 'N-Type'], featured: true },
-      { name: 'Trina Solar 445W', subtitle: 'TSM-445NEG9R.28', specs: ['445W', 'Black frame', 'TOPCon'] },
-      { name: 'JA Solar 535W', subtitle: 'JAM72D30-535/MB', specs: ['535W', 'Bifazial', 'N-Type'] },
-      { name: 'LONGi 450W', subtitle: 'LR5-72HPH-450M', specs: ['450W', 'Hi-MO 5', 'Mono'] },
-    ],
-    specs: {
-      'Leistung': '400W - 700W+',
-      'Technologie': 'Mono, Bifazial, TOPCon',
-      'Garantie': 'Bis zu 30 Jahre',
-      'Wirkungsgrad': 'Bis zu 22.8%',
-    },
     gradient: 'linear-gradient(135deg, #16a34a 0%, #059669 100%)',
+    glowColor: 'rgba(22, 163, 74, 0.3)',
   },
-  {
-    id: 'wechselrichter',
+  wechselrichter: {
     name: 'Wechselrichter',
-    icon: '⚡',
+    icon: 'wechselrichter',
     image: '/images/products/inverter.png',
     description: 'String- und Hybridwechselrichter für Privat- und Gewerbeanlagen. Zuverlässige Technik von Marktführern wie SMA, Huawei und Sungrow.',
     highlight: 'Hybrid & String Solutions',
-    products: [
-      { name: 'Sungrow SH5.0RS', subtitle: 'Hybrid Wechselrichter', specs: ['5kW', '1-Phase', 'Hybrid'], featured: true },
-      { name: 'SMA Sunny Tripower', subtitle: 'STP 10.0-3AV-40', specs: ['10kW', '3-Phasen', 'Smart'] },
-      { name: 'Huawei SUN2000', subtitle: 'SUN2000-10KTL-M1', specs: ['10kW', 'High Efficiency', 'AI'] },
-      { name: 'Kostal PLENTICORE', subtitle: 'PLENTICORE plus 10', specs: ['10kW', 'Made in Germany', 'Hybrid'] },
-    ],
-    specs: {
-      'Leistung': '3kW - 250kW+',
-      'Typen': 'String, Hybrid, Zentral',
-      'Phasen': '1-phasig & 3-phasig',
-      'Wirkungsgrad': 'Bis zu 98.6%',
-    },
     gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+    glowColor: 'rgba(59, 130, 246, 0.3)',
   },
-  {
-    id: 'speicher',
+  speicher: {
     name: 'Batteriespeicher',
-    icon: '🔋',
+    icon: 'speicher',
     image: '/images/products/battery.png',
     description: 'Moderne Batteriespeicher für maximale Eigenverbrauchsoptimierung. LFP-Technologie garantiert Sicherheit und Langlebigkeit.',
     highlight: 'LFP-Technologie',
-    products: [
-      { name: 'SMA Sunny Boy Storage', subtitle: 'Home Storage', specs: ['5.0 kWh', 'LFP', 'Modular'], featured: true },
-      { name: 'BYD Battery-Box', subtitle: 'HVS 10.2', specs: ['10.2 kWh', 'LFP', 'Premium'] },
-      { name: 'Huawei LUNA2000', subtitle: 'LUNA2000-10-S0', specs: ['10 kWh', 'LFP', 'Smart'] },
-      { name: 'Sungrow SBR', subtitle: 'SBR128', specs: ['12.8 kWh', 'Modular', 'Stackable'] },
-    ],
-    specs: {
-      'Kapazität': '5kWh - 100kWh+',
-      'Technologie': 'LFP (LiFePO4)',
-      'Lebensdauer': '6000+ Zyklen',
-      'Garantie': 'Bis zu 15 Jahre',
-    },
     gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+    glowColor: 'rgba(245, 158, 11, 0.3)',
   },
-]
+}
+
+interface Brand {
+  id: string
+  name: string
+  slug: string
+  logoUrl: string | null
+  categories: string[]
+}
+
+interface Product {
+  id: string
+  name: string
+  subtitle: string
+  category: string
+  brandId: string
+  brand: {
+    id: string
+    name: string
+    slug: string
+    logoUrl: string | null
+  }
+  imageUrl: string | null
+  specs: string[]
+  detailedSpecs: { [key: string]: string }
+  unit: string
+  featured: boolean
+  sortOrder: number
+  isActive: boolean
+}
 
 export default function ProduktePage() {
-  const [heroRef, heroVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.1 })
-  const [gridRef, gridVisible] = useScrollAnimationGroup(categories.length, { threshold: 0.1 })
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const [activeCategory, setActiveCategory] = useState('module')
+  // Hero is always visible immediately (no scroll animation needed for above-fold content)
+  const heroVisible = true
+  const [products, setProducts] = useState<Product[]>([])
+  const [brands, setBrands] = useState<Brand[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showFilters, setShowFilters] = useState(false)
+  
+  // Filter states from URL
+  const selectedBrands = searchParams.get('marke')?.split(',').filter(Boolean) || []
+
+  // Fetch products and brands
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [productsRes, brandsRes] = await Promise.all([
+          fetch('/api/products'),
+          fetch('/api/brands'),
+        ])
+        
+        const productsData = await productsRes.json()
+        const brandsData = await brandsRes.json()
+        
+        setProducts(productsData)
+        setBrands(brandsData)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  // Group products by category
+  const productsByCategory = useMemo(() => {
+    const grouped: { [key: string]: Product[] } = {
+      module: [],
+      wechselrichter: [],
+      speicher: [],
+    }
+    
+    products.forEach((product) => {
+      // Apply brand filter
+      if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand.slug)) {
+        return
+      }
+      if (grouped[product.category]) {
+        grouped[product.category].push(product)
+      }
+    })
+    
+    return grouped
+  }, [products, selectedBrands])
+
+  // Get brands for a specific category
+  const getBrandsForCategory = (category: string) => {
+    return brands.filter(brand => brand.categories.includes(category))
+  }
+
+  // Handle brand filter toggle
+  const toggleBrandFilter = (brandSlug: string) => {
+    const newBrands = selectedBrands.includes(brandSlug)
+      ? selectedBrands.filter(b => b !== brandSlug)
+      : [...selectedBrands, brandSlug]
+    
+    const params = new URLSearchParams(searchParams.toString())
+    if (newBrands.length > 0) {
+      params.set('marke', newBrands.join(','))
+    } else {
+      params.delete('marke')
+    }
+    
+    router.push(`/produkte?${params.toString()}`, { scroll: false })
+  }
+
+  // Clear all filters
+  const clearFilters = () => {
+    router.push('/produkte', { scroll: false })
+  }
+
+  const categories = Object.keys(categoryMeta)
+  // Categories grid is always visible immediately (no scroll animation needed for above-fold content)
+  const gridVisible = [true, true, true]
+
+  if (loading) {
+    return (
+      <main style={{ paddingTop: '80px', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div
+            style={{
+              width: '48px',
+              height: '48px',
+              border: '3px solid var(--gray-200)',
+              borderTopColor: 'var(--green-600)',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 16px',
+            }}
+          />
+          <p style={{ color: 'var(--gray-500)' }}>Produkte werden geladen...</p>
+          <style jsx>{`
+            @keyframes spin {
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main style={{ paddingTop: '80px' }}>
       {/* Hero Section with Gradient Background */}
       <section
-        ref={heroRef}
         style={{
           position: 'relative',
           paddingTop: '100px',
@@ -174,7 +354,7 @@ export default function ProduktePage() {
               Speicherlösungen. Alle Top-Marken aus einer Hand.
             </p>
 
-            {/* Quick Navigation Pills */}
+            {/* Quick Navigation Tabs */}
             <div
               style={{
                 display: 'flex',
@@ -183,41 +363,244 @@ export default function ProduktePage() {
                 flexWrap: 'wrap',
               }}
             >
-              {categories.map((cat) => (
-                <a
-                  key={cat.id}
-                  href={`#${cat.id}`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '12px 20px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '999px',
-                    color: 'var(--gray-200)',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    transition: 'all 0.3s ease',
-                    backdropFilter: 'blur(10px)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(22, 163, 74, 0.2)'
-                    e.currentTarget.style.borderColor = 'rgba(22, 163, 74, 0.4)'
-                    e.currentTarget.style.color = 'white'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
-                    e.currentTarget.style.color = 'var(--gray-200)'
-                  }}
-                >
-                  <span>{cat.icon}</span>
-                  {cat.name}
-                </a>
-              ))}
+              {categories.map((catId) => {
+                const cat = categoryMeta[catId]
+                const isActive = activeCategory === catId
+                return (
+                  <button
+                    key={catId}
+                    onClick={() => {
+                      setActiveCategory(catId)
+                      document.getElementById(catId)?.scrollIntoView({ behavior: 'smooth' })
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '12px 20px',
+                      background: isActive ? 'rgba(22, 163, 74, 0.3)' : 'rgba(255, 255, 255, 0.05)',
+                      border: isActive ? '1px solid rgba(22, 163, 74, 0.5)' : '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '999px',
+                      color: isActive ? 'white' : 'var(--gray-200)',
+                      fontSize: '14px',
+                      fontWeight: isActive ? 600 : 500,
+                      transition: 'all 0.3s ease',
+                      backdropFilter: 'blur(10px)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center' }}>{categoryIcons[cat.icon]}</span>
+                    {cat.name}
+                    <span style={{ 
+                      padding: '2px 8px', 
+                      background: 'rgba(255,255,255,0.1)', 
+                      borderRadius: '999px', 
+                      fontSize: '12px',
+                      marginLeft: '4px',
+                    }}>
+                      {productsByCategory[catId]?.length || 0}
+                    </span>
+                  </button>
+                )
+              })}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Filter Section */}
+      <section
+        style={{
+          padding: '24px 0',
+          background: 'white',
+          borderBottom: '1px solid var(--gray-200)',
+          position: 'sticky',
+          top: '80px',
+          zIndex: 40,
+        }}
+      >
+        <div className="container">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '10px 16px',
+                  background: showFilters ? 'var(--green-50)' : 'var(--gray-100)',
+                  border: showFilters ? '1px solid var(--green-300)' : '1px solid var(--gray-200)',
+                  borderRadius: '10px',
+                  color: showFilters ? 'var(--green-700)' : 'var(--gray-700)',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <FilterIcon />
+                Marken filtern
+                {selectedBrands.length > 0 && (
+                  <span
+                    style={{
+                      width: '20px',
+                      height: '20px',
+                      background: 'var(--green-600)',
+                      color: 'white',
+                      borderRadius: '50%',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {selectedBrands.length}
+                  </span>
+                )}
+              </button>
+
+              {/* Active Filter Tags */}
+              {selectedBrands.length > 0 && (
+                <>
+                  {selectedBrands.map((slug) => {
+                    const brand = brands.find(b => b.slug === slug)
+                    if (!brand) return null
+                    return (
+                      <span
+                        key={slug}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '8px 12px',
+                          background: 'var(--green-50)',
+                          border: '1px solid var(--green-200)',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          fontWeight: 500,
+                          color: 'var(--green-700)',
+                        }}
+                      >
+                        {brand.name}
+                        <button
+                          onClick={() => toggleBrandFilter(slug)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '16px',
+                            height: '16px',
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0,
+                            color: 'var(--green-600)',
+                          }}
+                        >
+                          <XIcon />
+                        </button>
+                      </span>
+                    )
+                  })}
+                  <button
+                    onClick={clearFilters}
+                    style={{
+                      padding: '8px 12px',
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'var(--gray-500)',
+                      fontSize: '13px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    Filter zurücksetzen
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div style={{ fontSize: '14px', color: 'var(--gray-500)' }}>
+              {products.filter(p => selectedBrands.length === 0 || selectedBrands.includes(p.brand.slug)).length} Produkte
+            </div>
+          </div>
+
+          {/* Filter Panel */}
+          {showFilters && (
+            <div
+              style={{
+                marginTop: '20px',
+                padding: '24px',
+                background: 'var(--gray-50)',
+                borderRadius: '12px',
+                border: '1px solid var(--gray-200)',
+              }}
+            >
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '24px' }}>
+                {['module', 'wechselrichter', 'speicher'].map((category) => {
+                  const categoryBrands = getBrandsForCategory(category)
+                  if (categoryBrands.length === 0) return null
+                  return (
+                    <div key={category}>
+                      <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--gray-500)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>
+                        {categoryMeta[category].name}
+                      </p>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {categoryBrands.map((brand) => (
+                          <label
+                            key={brand.id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '10px',
+                              padding: '8px 12px',
+                              background: selectedBrands.includes(brand.slug) ? 'var(--green-50)' : 'white',
+                              border: selectedBrands.includes(brand.slug) ? '1px solid var(--green-300)' : '1px solid var(--gray-200)',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedBrands.includes(brand.slug)}
+                              onChange={() => toggleBrandFilter(brand.slug)}
+                              style={{ display: 'none' }}
+                            />
+                            <span
+                              style={{
+                                width: '18px',
+                                height: '18px',
+                                borderRadius: '4px',
+                                border: selectedBrands.includes(brand.slug) ? '2px solid var(--green-600)' : '2px solid var(--gray-300)',
+                                background: selectedBrands.includes(brand.slug) ? 'var(--green-600)' : 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s ease',
+                              }}
+                            >
+                              {selectedBrands.includes(brand.slug) && (
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                                  <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                              )}
+                            </span>
+                            <span style={{ fontSize: '14px', color: 'var(--gray-700)', fontWeight: 500 }}>
+                              {brand.name}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -231,176 +614,213 @@ export default function ProduktePage() {
       >
         <div className="container">
           <div
-            ref={gridRef}
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
               gap: '32px',
             }}
           >
-            {categories.map((category, index) => (
-              <a
-                key={category.id}
-                href={`#${category.id}`}
-                className="card-hover"
-                style={{
-                  position: 'relative',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  background: 'white',
-                  borderRadius: '20px',
-                  overflow: 'hidden',
-                  border: '1px solid var(--gray-200)',
-                  textDecoration: 'none',
-                  opacity: gridVisible[index] ? 1 : 0,
-                  transform: gridVisible[index] ? 'translateY(0)' : 'translateY(30px)',
-                  transition: `all 0.6s ease-out ${index * 0.15}s`,
-                }}
-              >
-                {/* Category Image Container */}
-                <div
+            {categories.map((catId, index) => {
+              const category = categoryMeta[catId]
+              const productCount = productsByCategory[catId]?.length || 0
+              return (
+                <a
+                  key={catId}
+                  href={`#${catId}`}
+                  className="card-hover"
                   style={{
                     position: 'relative',
-                    height: '200px',
-                    background: category.gradient,
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    background: 'white',
+                    borderRadius: '20px',
                     overflow: 'hidden',
+                    border: '1px solid var(--gray-200)',
+                    textDecoration: 'none',
+                    opacity: gridVisible[index] ? 1 : 0,
+                    transform: gridVisible[index] ? 'translateY(0)' : 'translateY(30px)',
+                    transition: `all 0.6s ease-out ${index * 0.15}s`,
                   }}
                 >
-                  {/* Decorative Pattern */}
+                  {/* Category Image Container with Premium Effects */}
                   <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-                      opacity: 0.5,
-                    }}
-                  />
-
-                  {/* Product Image */}
-                  <div
-                    className="product-image-hover"
                     style={{
                       position: 'relative',
-                      width: '160px',
-                      height: '160px',
-                      zIndex: 1,
+                      height: '200px',
+                      background: `radial-gradient(ellipse at center, ${category.glowColor.replace('0.3', '0.15')} 0%, transparent 70%), ${category.gradient}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
                     }}
                   >
-                    <Image
-                      src={category.image}
-                      alt={category.name}
-                      fill
+                    {/* Geometric Pattern Lines */}
+                    <div
                       style={{
-                        objectFit: 'contain',
-                        filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))',
+                        position: 'absolute',
+                        inset: 0,
+                        background: `
+                          linear-gradient(30deg, transparent 48%, rgba(255,255,255,0.05) 49%, rgba(255,255,255,0.05) 51%, transparent 52%),
+                          linear-gradient(150deg, transparent 48%, rgba(255,255,255,0.03) 49%, rgba(255,255,255,0.03) 51%, transparent 52%)
+                        `,
+                        backgroundSize: '60px 60px',
                       }}
                     />
-                  </div>
 
-                  {/* Highlight Badge */}
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '16px',
-                      right: '16px',
-                      padding: '6px 12px',
-                      background: 'rgba(255, 255, 255, 0.2)',
-                      backdropFilter: 'blur(8px)',
-                      borderRadius: '999px',
-                      color: 'white',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                    }}
-                  >
-                    {category.highlight}
-                  </span>
-                </div>
-
-                {/* Card Content */}
-                <div style={{ padding: '28px' }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      marginBottom: '12px',
-                    }}
-                  >
-                    <span style={{ fontSize: '24px' }}>{category.icon}</span>
-                    <h3
+                    {/* Product Image with Glow */}
+                    <div
+                      className="product-image-hover"
                       style={{
-                        fontSize: '1.5rem',
-                        fontWeight: 700,
-                        color: 'var(--gray-900)',
+                        position: 'relative',
+                        width: '160px',
+                        height: '160px',
+                        zIndex: 1,
                       }}
                     >
-                      {category.name}
-                    </h3>
-                  </div>
-                  <p
-                    style={{
-                      fontSize: '15px',
-                      color: 'var(--gray-600)',
-                      lineHeight: 1.6,
-                      marginBottom: '20px',
-                    }}
-                  >
-                    {category.description}
-                  </p>
+                      <Image
+                        src={category.image}
+                        alt={category.name}
+                        fill
+                        style={{
+                          objectFit: 'contain',
+                          filter: `drop-shadow(0 20px 40px ${category.glowColor})`,
+                          mixBlendMode: 'multiply',
+                        }}
+                      />
+                    </div>
 
-                  {/* Quick Stats */}
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: '12px',
-                      paddingTop: '20px',
-                      borderTop: '1px solid var(--gray-100)',
-                    }}
-                  >
-                    {Object.entries(category.specs).slice(0, 2).map(([key, value]) => (
-                      <div key={key}>
-                        <p style={{ fontSize: '12px', color: 'var(--gray-500)', marginBottom: '4px' }}>
-                          {key}
+                    {/* Highlight Badge */}
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '16px',
+                        right: '16px',
+                        padding: '6px 12px',
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        backdropFilter: 'blur(8px)',
+                        borderRadius: '999px',
+                        color: 'white',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {category.highlight}
+                    </span>
+                  </div>
+
+                  {/* Card Content */}
+                  <div style={{ padding: '28px' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        marginBottom: '12px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '10px',
+                          background: category.gradient,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                        }}
+                      >
+                        {categoryIcons[category.icon]}
+                      </div>
+                      <h3
+                        style={{
+                          fontSize: '1.5rem',
+                          fontWeight: 700,
+                          color: 'var(--gray-900)',
+                        }}
+                      >
+                        {category.name}
+                      </h3>
+                    </div>
+                    <p
+                      style={{
+                        fontSize: '15px',
+                        color: 'var(--gray-600)',
+                        lineHeight: 1.6,
+                        marginBottom: '20px',
+                      }}
+                    >
+                      {category.description}
+                    </p>
+
+                    {/* Quick Stats */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '16px',
+                        paddingTop: '20px',
+                        borderTop: '1px solid var(--gray-100)',
+                      }}
+                    >
+                      <div>
+                        <p style={{ fontSize: '24px', fontWeight: 700, color: 'var(--gray-900)' }}>
+                          {productCount}
                         </p>
-                        <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--gray-900)' }}>
-                          {value}
+                        <p style={{ fontSize: '12px', color: 'var(--gray-500)' }}>
+                          Produkte
                         </p>
                       </div>
-                    ))}
-                  </div>
+                      <div style={{ width: '1px', height: '32px', background: 'var(--gray-200)' }} />
+                      <div>
+                        <p style={{ fontSize: '24px', fontWeight: 700, color: 'var(--gray-900)' }}>
+                          {new Set(productsByCategory[catId]?.map(p => p.brand.slug) || []).size}
+                        </p>
+                        <p style={{ fontSize: '12px', color: 'var(--gray-500)' }}>
+                          Marken
+                        </p>
+                      </div>
+                    </div>
 
-                  {/* View More Link */}
-                  <div
-                    style={{
-                      marginTop: '24px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      color: 'var(--green-600)',
-                      fontSize: '15px',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Alle Produkte ansehen
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
+                    {/* View More Link */}
+                    <div
+                      style={{
+                        marginTop: '24px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        color: 'var(--green-600)',
+                        fontSize: '15px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Alle Produkte ansehen
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              </a>
-            ))}
+                </a>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* Detailed Category Sections */}
-      {categories.map((category, catIndex) => (
-        <CategorySection key={category.id} category={category} index={catIndex} />
-      ))}
+      {/* Detailed Category Sections with Expandable Cards */}
+      {categories.map((catId, catIndex) => {
+        const category = categoryMeta[catId]
+        const categoryProducts = productsByCategory[catId] || []
+        return (
+          <CategorySection 
+            key={catId} 
+            categoryId={catId}
+            category={category} 
+            products={categoryProducts}
+            index={catIndex} 
+          />
+        )
+      })}
 
       {/* CTA Section */}
       <section
@@ -513,14 +933,57 @@ export default function ProduktePage() {
   )
 }
 
-// Separate component for category sections to use hooks properly
-function CategorySection({ category, index }: { category: typeof categories[0]; index: number }) {
+// Separate component for category sections with expandable product cards
+function CategorySection({ 
+  categoryId,
+  category, 
+  products,
+  index 
+}: { 
+  categoryId: string
+  category: { name: string; icon: string; gradient: string; glowColor: string; description: string; highlight: string; image: string }
+  products: Product[]
+  index: number 
+}) {
   const [sectionRef, sectionVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.1 })
-  const [productsRef, productsVisible] = useScrollAnimationGroup(category.products.length, { threshold: 0.1 })
+  const [expandedProduct, setExpandedProduct] = useState<string | null>(null)
+
+  // Calculate category specs from products
+  const categorySpecs = useMemo(() => {
+    if (products.length === 0) return {}
+    
+    // Generic specs based on category
+    if (categoryId === 'module') {
+      return {
+        'Leistung': '400W - 700W+',
+        'Technologie': 'Mono, Bifazial, TOPCon',
+        'Garantie': 'Bis zu 30 Jahre',
+        'Wirkungsgrad': 'Bis zu 22.8%',
+      }
+    }
+    if (categoryId === 'wechselrichter') {
+      return {
+        'Leistung': '3kW - 250kW+',
+        'Typen': 'String, Hybrid, Zentral',
+        'Phasen': '1-phasig & 3-phasig',
+        'Wirkungsgrad': 'Bis zu 98.6%',
+      }
+    }
+    return {
+      'Kapazität': '5kWh - 100kWh+',
+      'Technologie': 'LFP (LiFePO4)',
+      'Lebensdauer': '6000+ Zyklen',
+      'Garantie': 'Bis zu 15 Jahre',
+    }
+  }, [categoryId, products.length])
+
+  if (products.length === 0) {
+    return null
+  }
 
   return (
     <section
-      id={category.id}
+      id={categoryId}
       ref={sectionRef}
       style={{
         paddingTop: '100px',
@@ -530,9 +993,10 @@ function CategorySection({ category, index }: { category: typeof categories[0]; 
     >
       <div className="container">
         <div
+          className="product-section-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
+            gridTemplateColumns: '1fr 400px',
             gap: '60px',
             alignItems: 'start',
           }}
@@ -562,10 +1026,36 @@ function CategorySection({ category, index }: { category: typeof categories[0]; 
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '28px',
+                  color: 'white',
                 }}
               >
-                {category.icon}
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  {category.icon === 'module' && (
+                    <>
+                      <circle cx="12" cy="12" r="4"/>
+                      <path d="M12 2v2"/>
+                      <path d="M12 20v2"/>
+                      <path d="M4.93 4.93l1.41 1.41"/>
+                      <path d="M17.66 17.66l1.41 1.41"/>
+                      <path d="M2 12h2"/>
+                      <path d="M20 12h2"/>
+                      <path d="M6.34 17.66l-1.41 1.41"/>
+                      <path d="M19.07 4.93l-1.41 1.41"/>
+                    </>
+                  )}
+                  {category.icon === 'wechselrichter' && (
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                  )}
+                  {category.icon === 'speicher' && (
+                    <>
+                      <rect x="2" y="7" width="18" height="10" rx="2" ry="2"/>
+                      <path d="M22 11v2"/>
+                      <path d="M6 11v2"/>
+                      <path d="M10 11v2"/>
+                      <path d="M14 11v2"/>
+                    </>
+                  )}
+                </svg>
               </div>
               <h2
                 style={{
@@ -588,83 +1078,24 @@ function CategorySection({ category, index }: { category: typeof categories[0]; 
               {category.description}
             </p>
 
-            {/* Products List */}
+            {/* Products List with Expandable Cards */}
             <div
-              ref={productsRef}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '16px',
               }}
             >
-              {category.products.map((product, i) => (
-                <div
-                  key={i}
-                  className="product-hover"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '20px 24px',
-                    background: 'white',
-                    borderRadius: '16px',
-                    border: product.featured ? '2px solid var(--green-500)' : '1px solid var(--gray-200)',
-                    flexWrap: 'wrap',
-                    gap: '16px',
-                    opacity: productsVisible[i] ? 1 : 0,
-                    transform: productsVisible[i] ? 'translateX(0)' : 'translateX(-20px)',
-                    transition: `all 0.5s ease-out ${i * 0.1}s`,
-                    position: 'relative',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {/* Featured Badge */}
-                  {product.featured && (
-                    <span
-                      style={{
-                        position: 'absolute',
-                        top: '12px',
-                        right: '12px',
-                        padding: '4px 10px',
-                        background: 'var(--green-500)',
-                        color: 'white',
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        borderRadius: '999px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                      }}
-                    >
-                      Empfohlen
-                    </span>
-                  )}
-
-                  <div style={{ flex: 1, minWidth: '200px' }}>
-                    <p style={{ fontWeight: 700, fontSize: '1.0625rem', color: 'var(--gray-900)' }}>
-                      {product.name}
-                    </p>
-                    <p style={{ fontSize: '14px', color: 'var(--gray-500)', marginTop: '4px' }}>
-                      {product.subtitle}
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    {product.specs.map((spec, j) => (
-                      <span
-                        key={j}
-                        style={{
-                          padding: '6px 14px',
-                          background: 'var(--gray-100)',
-                          borderRadius: '8px',
-                          fontSize: '13px',
-                          fontWeight: 500,
-                          color: 'var(--gray-700)',
-                        }}
-                      >
-                        {spec}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+              {products.map((product, i) => (
+                <ExpandableProductCard
+                  key={product.id}
+                  product={product}
+                  category={category}
+                  index={i}
+                  isExpanded={expandedProduct === product.id}
+                  onToggle={() => setExpandedProduct(expandedProduct === product.id ? null : product.id)}
+                  sectionVisible={sectionVisible}
+                />
               ))}
             </div>
 
@@ -673,9 +1104,15 @@ function CategorySection({ category, index }: { category: typeof categories[0]; 
                 fontSize: '14px',
                 color: 'var(--gray-500)',
                 marginTop: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
               }}
             >
-              ✓ Weitere Produkte auf Anfrage verfügbar
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green-500)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+              Weitere Produkte auf Anfrage verfügbar
             </p>
           </div>
 
@@ -683,16 +1120,16 @@ function CategorySection({ category, index }: { category: typeof categories[0]; 
           <div
             style={{
               position: 'sticky',
-              top: '120px',
+              top: '180px',
               opacity: sectionVisible ? 1 : 0,
               transform: sectionVisible ? 'translateX(0)' : 'translateX(30px)',
               transition: 'all 0.8s ease-out 0.2s',
             }}
           >
-            {/* Product Showcase */}
+            {/* Product Showcase with Enhanced Effects */}
             <div
               style={{
-                background: category.gradient,
+                background: `radial-gradient(ellipse at center, ${category.glowColor.replace('0.3', '0.2')} 0%, transparent 60%), ${category.gradient}`,
                 borderRadius: '24px',
                 padding: '40px',
                 marginBottom: '24px',
@@ -704,13 +1141,16 @@ function CategorySection({ category, index }: { category: typeof categories[0]; 
                 overflow: 'hidden',
               }}
             >
-              {/* Decorative Pattern */}
+              {/* Geometric Pattern */}
               <div
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.08\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-                  opacity: 0.5,
+                  background: `
+                    linear-gradient(30deg, transparent 48%, rgba(255,255,255,0.05) 49%, rgba(255,255,255,0.05) 51%, transparent 52%),
+                    linear-gradient(-30deg, transparent 48%, rgba(255,255,255,0.03) 49%, rgba(255,255,255,0.03) 51%, transparent 52%)
+                  `,
+                  backgroundSize: '40px 40px',
                 }}
               />
 
@@ -728,7 +1168,7 @@ function CategorySection({ category, index }: { category: typeof categories[0]; 
                   fill
                   style={{
                     objectFit: 'contain',
-                    filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.3))',
+                    filter: `drop-shadow(0 25px 50px ${category.glowColor})`,
                   }}
                 />
               </div>
@@ -760,7 +1200,7 @@ function CategorySection({ category, index }: { category: typeof categories[0]; 
                   gap: '16px',
                 }}
               >
-                {Object.entries(category.specs).map(([key, value]) => (
+                {Object.entries(categorySpecs).map(([key, value]) => (
                   <div
                     key={key}
                     style={{
@@ -806,6 +1246,349 @@ function CategorySection({ category, index }: { category: typeof categories[0]; 
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @media (max-width: 900px) {
+          .product-section-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </section>
+  )
+}
+
+// Expandable Product Card Component
+function ExpandableProductCard({ 
+  product, 
+  category, 
+  index, 
+  isExpanded, 
+  onToggle,
+  sectionVisible 
+}: { 
+  product: Product
+  category: { name: string; icon: string; gradient: string; glowColor: string; description: string; highlight: string; image: string }
+  index: number
+  isExpanded: boolean
+  onToggle: () => void
+  sectionVisible: boolean
+}) {
+  const { addItem } = useInquiryCart()
+  const [quantity, setQuantity] = useState(1)
+  const [added, setAdded] = useState(false)
+
+  const handleAddToInquiry = () => {
+    addItem({
+      name: product.name,
+      subtitle: product.subtitle,
+      category: product.category,
+      categoryName: category.name,
+      quantity,
+      unit: product.unit,
+      specs: product.specs,
+    })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2000)
+  }
+
+  return (
+    <div
+      className="product-hover"
+      style={{
+        background: 'white',
+        borderRadius: '16px',
+        border: product.featured ? `2px solid ${category.glowColor.replace('0.3', '0.6')}` : '1px solid var(--gray-200)',
+        overflow: 'hidden',
+        opacity: sectionVisible ? 1 : 0,
+        transform: sectionVisible ? 'translateX(0)' : 'translateX(-20px)',
+        transition: `all 0.5s ease-out ${index * 0.1}s`,
+        position: 'relative',
+      }}
+    >
+      {/* Main Card Content - Clickable */}
+      <div
+        onClick={onToggle}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '20px 24px',
+          cursor: 'pointer',
+          flexWrap: 'wrap',
+          gap: '16px',
+        }}
+      >
+        {/* Featured Badge */}
+        {product.featured && (
+          <span
+            style={{
+              position: 'absolute',
+              top: '12px',
+              right: '12px',
+              padding: '4px 10px',
+              background: category.gradient,
+              color: 'white',
+              fontSize: '11px',
+              fontWeight: 600,
+              borderRadius: '999px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+            }}
+          >
+            Empfohlen
+          </span>
+        )}
+
+        <div style={{ flex: 1, minWidth: '200px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <p style={{ fontWeight: 700, fontSize: '1.0625rem', color: 'var(--gray-900)' }}>
+              {product.name}
+            </p>
+            {product.brand.logoUrl && (
+              <Image
+                src={product.brand.logoUrl}
+                alt={product.brand.name}
+                width={60}
+                height={20}
+                style={{ height: '16px', width: 'auto', objectFit: 'contain', opacity: 0.7 }}
+                unoptimized
+              />
+            )}
+          </div>
+          <p style={{ fontSize: '14px', color: 'var(--gray-500)', marginTop: '4px' }}>
+            {product.subtitle}
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+          {product.specs.map((spec, j) => (
+            <span
+              key={j}
+              style={{
+                padding: '6px 14px',
+                background: 'var(--gray-100)',
+                borderRadius: '8px',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: 'var(--gray-700)',
+              }}
+            >
+              {spec}
+            </span>
+          ))}
+          <span
+            className="transition-transform"
+            style={{
+              marginLeft: '8px',
+              color: 'var(--gray-400)',
+              transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+            }}
+          >
+            <ChevronDown />
+          </span>
+        </div>
+      </div>
+
+      {/* Expandable Content */}
+      {isExpanded && (
+        <div
+          className="expand-content"
+          style={{
+            borderTop: '1px solid var(--gray-100)',
+            background: 'var(--gray-50)',
+          }}
+        >
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '200px 1fr',
+              gap: '32px',
+              padding: '24px',
+            }}
+          >
+            {/* Product Image */}
+            <div
+              style={{
+                position: 'relative',
+                height: '180px',
+                background: `radial-gradient(ellipse at center, ${category.glowColor.replace('0.3', '0.1')} 0%, transparent 70%)`,
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid var(--gray-200)',
+              }}
+            >
+              <Image
+                src={product.imageUrl || category.image}
+                alt={product.name}
+                width={140}
+                height={140}
+                style={{
+                  objectFit: 'contain',
+                  filter: `drop-shadow(0 10px 20px ${category.glowColor})`,
+                }}
+              />
+            </div>
+
+            {/* Detailed Specs */}
+            <div>
+              <h4 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--gray-900)', marginBottom: '16px' }}>
+                Technische Daten
+              </h4>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '12px',
+                }}
+              >
+                {Object.entries(product.detailedSpecs).map(([key, value]) => (
+                  <div
+                    key={key}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      padding: '8px 12px',
+                      background: 'white',
+                      borderRadius: '8px',
+                      border: '1px solid var(--gray-200)',
+                    }}
+                  >
+                    <span style={{ fontSize: '13px', color: 'var(--gray-500)' }}>{key}</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--gray-900)' }}>{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Add to Inquiry Section */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '24px',
+              padding: '20px 24px',
+              borderTop: '1px solid var(--gray-200)',
+              background: 'white',
+              flexWrap: 'wrap',
+            }}
+          >
+            {/* Quantity Input */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '14px', color: 'var(--gray-600)' }}>Menge ({product.unit}):</span>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0',
+                  background: 'var(--gray-100)',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  border: '1px solid var(--gray-200)',
+                }}
+              >
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setQuantity(Math.max(1, quantity - 1))
+                  }}
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: 'var(--gray-600)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background 0.2s ease',
+                  }}
+                >
+                  <MinusIcon />
+                </button>
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  onClick={(e) => e.stopPropagation()}
+                  className="quantity-input"
+                  style={{
+                    width: '70px',
+                    height: '40px',
+                    textAlign: 'center',
+                    border: 'none',
+                    background: 'white',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    color: 'var(--gray-900)',
+                  }}
+                  min="1"
+                />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setQuantity(quantity + 1)
+                  }}
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: 'var(--gray-600)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background 0.2s ease',
+                  }}
+                >
+                  <PlusIcon />
+                </button>
+              </div>
+            </div>
+
+            {/* Add to Inquiry Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                handleAddToInquiry()
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 24px',
+                background: added ? 'var(--green-600)' : category.gradient,
+                color: 'white',
+                fontSize: '15px',
+                fontWeight: 600,
+                borderRadius: '10px',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                minWidth: '200px',
+                justifyContent: 'center',
+              }}
+            >
+              {added ? (
+                <>
+                  <CheckIcon />
+                  Hinzugefügt!
+                </>
+              ) : (
+                <>
+                  <PlusIcon />
+                  Zur Anfrage hinzufügen
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
