@@ -209,6 +209,18 @@ export function ProductsOverview() {
 
       {/* Main content container */}
       <div className="container" style={{ position: 'relative', zIndex: 10, paddingTop: '40px' }}>
+        {/* Category Hint */}
+        <p
+          style={{
+            textAlign: 'center',
+            color: 'rgba(255, 255, 255, 0.5)',
+            fontSize: '14px',
+            marginBottom: '16px',
+          }}
+        >
+          Wählen Sie eine Kategorie
+        </p>
+
         {/* Tab Navigation - Enhanced */}
         <div 
           className="tabs-container"
@@ -558,88 +570,8 @@ export function ProductsOverview() {
           </div>
         </div>
 
-        {/* Centered Category Navigation */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            paddingTop: '24px',
-            paddingBottom: '40px',
-          }}
-        >
-          <div
-            className="inline-nav"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-          >
-            {/* Dots with active label */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {categories.map((category) => {
-                const isActive = category.id === activeCategory
-                const categoryColors: Record<string, string> = {
-                  module: '#22c55e',
-                  wechselrichter: '#3b82f6',
-                  speicher: '#f59e0b',
-                }
-                const accentColor = categoryColors[category.id] || '#22c55e'
-                
-                return (
-                  <button
-                    key={`nav-${category.id}`}
-                    onClick={() => handleCategoryChange(category.id)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      padding: isActive ? '6px 14px' : '6px',
-                      background: isActive ? `${accentColor}22` : 'transparent',
-                      border: isActive ? `1px solid ${accentColor}` : '1px solid rgba(255, 255, 255, 0.2)',
-                      borderRadius: '999px',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        background: isActive ? accentColor : 'rgba(255, 255, 255, 0.4)',
-                        transition: 'all 0.3s ease',
-                      }}
-                    />
-                    {isActive && (
-                      <span style={{ color: 'white', fontSize: '13px', fontWeight: 600 }}>
-                        {category.title}
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-            {/* Hint text */}
-            <p style={{ 
-              color: 'rgba(255, 255, 255, 0.4)', 
-              fontSize: '11px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              margin: 0,
-            }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-              Kategorie wechseln
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: 'rotate(180deg)' }}>
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </p>
-          </div>
-        </div>
+        {/* Bottom Spacing */}
+        <div style={{ paddingBottom: '40px' }} />
       </div>
 
       {/* CSS Animations */}
