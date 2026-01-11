@@ -152,7 +152,7 @@ export function ProductsOverview() {
       className="products-overview-section"
       style={{ 
         position: 'relative',
-        minHeight: '700px',
+        minHeight: '600px',
         overflow: 'hidden',
       }}
     >
@@ -209,47 +209,31 @@ export function ProductsOverview() {
 
       {/* Main content container */}
       <div className="container" style={{ position: 'relative', zIndex: 10 }}>
-        {/* Section Header */}
+        {/* Section Header - Compact */}
         <div
           style={{
             textAlign: 'center',
-            paddingTop: '60px',
-            paddingBottom: '24px',
+            paddingTop: '40px',
+            paddingBottom: '16px',
           }}
         >
-          <span
-            style={{
-              display: 'inline-block',
-              padding: '6px 14px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '999px',
-              color: 'rgba(255, 255, 255, 0.8)',
-              fontSize: '12px',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              marginBottom: '12px',
-            }}
-          >
-            Produktkategorien
-          </span>
           <h3
             style={{
-              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
-              fontWeight: 700,
-              color: 'white',
-              marginBottom: '8px',
+              fontSize: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+              fontWeight: 600,
+              color: 'rgba(255, 255, 255, 0.9)',
+              marginBottom: '4px',
             }}
           >
-            Wählen Sie Ihren Bereich
+            Unser Sortiment
           </h3>
-              <p
-                style={{ 
-              color: 'rgba(255, 255, 255, 0.6)',
-              fontSize: '15px',
+          <p
+            style={{ 
+              color: 'rgba(255, 255, 255, 0.5)',
+              fontSize: '14px',
             }}
           >
-            Klicken Sie auf eine Kategorie, um mehr zu erfahren
+            Wählen Sie eine Kategorie
           </p>
         </div>
 
@@ -259,8 +243,8 @@ export function ProductsOverview() {
           style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: '16px',
-            paddingBottom: '50px',
+            gap: '12px',
+            paddingBottom: '32px',
           }}
         >
           {categories.map((category, index) => {
@@ -281,24 +265,24 @@ export function ProductsOverview() {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '12px',
-                  padding: '20px 32px',
+                  gap: '8px',
+                  padding: '14px 24px',
                   background: isActive 
                     ? `linear-gradient(135deg, ${accentColor}22, ${accentColor}11)` 
                     : 'rgba(255, 255, 255, 0.03)',
                   border: isActive 
                     ? `2px solid ${accentColor}` 
                     : '2px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '16px',
+                  borderRadius: '14px',
                   color: isActive ? 'white' : 'rgba(255, 255, 255, 0.6)',
-                  fontSize: '15px',
+                  fontSize: '14px',
                   fontWeight: isActive ? 600 : 500,
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   backdropFilter: 'blur(10px)',
                   position: 'relative',
                   overflow: 'hidden',
-                  minWidth: '140px',
+                  minWidth: '120px',
                 }}
               >
                 {/* Pulse animation for non-active tabs */}
@@ -322,10 +306,10 @@ export function ProductsOverview() {
                     display: 'flex', 
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '48px',
-                    height: '48px',
+                    width: '40px',
+                    height: '40px',
                     background: isActive ? accentColor : 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: '12px',
+                    borderRadius: '10px',
                     color: isActive ? 'white' : 'rgba(255, 255, 255, 0.7)',
                     transition: 'all 0.3s ease',
                   }}
@@ -369,9 +353,9 @@ export function ProductsOverview() {
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '60px',
+            gap: '40px',
             alignItems: 'center',
-            minHeight: '450px',
+            minHeight: '380px',
           }}
         >
           {/* Left: Content Area */}
@@ -386,41 +370,41 @@ export function ProductsOverview() {
             <span
               style={{
                 display: 'inline-block',
-                padding: '8px 16px',
+                padding: '6px 12px',
                 background: 'rgba(255, 255, 255, 0.1)',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '999px',
                 color: 'rgba(255, 255, 255, 0.9)',
-                fontSize: '13px',
+                fontSize: '12px',
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
-                marginBottom: '20px',
-                }}
-              >
-                Unser Angebot
+                marginBottom: '12px',
+              }}
+            >
+              Unser Angebot
             </span>
 
             {/* Title */}
-              <h2
-                style={{ 
-                fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
+            <h2
+              style={{ 
+                fontSize: 'clamp(2rem, 4vw, 2.75rem)',
                 fontWeight: 800,
                 color: 'white',
-                marginBottom: '20px',
+                marginBottom: '12px',
                 lineHeight: 1.1,
               }}
             >
               {currentCategory.title}
-              </h2>
+            </h2>
 
             {/* Description */}
             <p
               style={{
-                fontSize: '1.125rem',
+                fontSize: '1rem',
                 color: 'rgba(255, 255, 255, 0.75)',
-                lineHeight: 1.7,
-                marginBottom: '32px',
+                lineHeight: 1.6,
+                marginBottom: '20px',
                 maxWidth: '480px',
               }}
             >
@@ -432,8 +416,8 @@ export function ProductsOverview() {
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '12px',
-                marginBottom: '32px',
+                gap: '8px',
+                marginBottom: '20px',
               }}
             >
               {currentCategory.specs.map((spec, i) => (
@@ -442,17 +426,17 @@ export function ProductsOverview() {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '10px',
-                    padding: '12px 16px',
+                    gap: '8px',
+                    padding: '10px 14px',
                     background: 'rgba(255, 255, 255, 0.08)',
-                    borderRadius: '10px',
+                    borderRadius: '8px',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                   }}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                  <span style={{ color: 'white', fontSize: '14px', fontWeight: 500 }}>
+                  <span style={{ color: 'white', fontSize: '13px', fontWeight: 500 }}>
                     {spec}
                   </span>
                 </div>
@@ -463,9 +447,9 @@ export function ProductsOverview() {
             <div
               style={{
                 display: 'flex',
-                gap: '32px',
-                marginBottom: '32px',
-                paddingTop: '24px',
+                gap: '24px',
+                marginBottom: '20px',
+                paddingTop: '16px',
                 borderTop: '1px solid rgba(255, 255, 255, 0.1)',
               }}
             >
@@ -473,7 +457,7 @@ export function ProductsOverview() {
                 <p 
                   className="stat-number"
                   style={{ 
-                    fontSize: '2.5rem', 
+                    fontSize: '2rem', 
                     fontWeight: 800, 
                     color: 'white',
                     lineHeight: 1,
@@ -481,7 +465,7 @@ export function ProductsOverview() {
                 >
                   {productCount}
                 </p>
-                <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', marginTop: '4px' }}>
+                <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', marginTop: '2px' }}>
                   Produkte
                 </p>
               </div>
@@ -490,7 +474,7 @@ export function ProductsOverview() {
                 <p 
                   className="stat-number"
                   style={{ 
-                    fontSize: '2.5rem', 
+                    fontSize: '2rem', 
                     fontWeight: 800, 
                     color: 'white',
                     lineHeight: 1,
@@ -498,7 +482,7 @@ export function ProductsOverview() {
                 >
                   {brandCount}
                 </p>
-                <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', marginTop: '4px' }}>
+                <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', marginTop: '2px' }}>
                   Marken
                 </p>
               </div>
@@ -511,13 +495,13 @@ export function ProductsOverview() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '12px',
-                padding: '16px 28px',
+                gap: '10px',
+                padding: '12px 22px',
                 background: 'white',
                 color: '#0f172a',
-                fontSize: '15px',
+                fontSize: '14px',
                 fontWeight: 600,
-                borderRadius: '12px',
+                borderRadius: '10px',
                 transition: 'all 0.3s ease',
               }}
             >
@@ -546,7 +530,7 @@ export function ProductsOverview() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              height: '450px',
+              height: '380px',
               animation: 'slideInRight 0.5s ease-out forwards',
             }}
           >
@@ -556,8 +540,8 @@ export function ProductsOverview() {
               style={{
                 position: 'relative',
                 width: '100%',
-                maxWidth: '400px',
-                height: '400px',
+                maxWidth: '340px',
+                height: '340px',
               }}
             >
               <Image
@@ -608,9 +592,9 @@ export function ProductsOverview() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '16px',
-            paddingTop: '40px',
-            paddingBottom: '60px',
+            gap: '10px',
+            paddingTop: '24px',
+            paddingBottom: '40px',
           }}
         >
           {/* Progress dots with labels */}
