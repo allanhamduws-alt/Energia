@@ -217,16 +217,16 @@ export function ProductsOverview() {
             paddingBottom: '16px',
           }}
         >
-          <h3
+          <h2
             style={{
-              fontSize: 'clamp(1.25rem, 2.5vw, 1.5rem)',
-              fontWeight: 600,
-              color: 'rgba(255, 255, 255, 0.9)',
-              marginBottom: '4px',
+              fontSize: 'clamp(1.75rem, 3.5vw, 2.25rem)',
+              fontWeight: 700,
+              color: 'white',
+              marginBottom: '6px',
             }}
           >
             Unser Sortiment
-          </h3>
+          </h2>
           <p
             style={{ 
               color: 'rgba(255, 255, 255, 0.5)',
@@ -488,37 +488,84 @@ export function ProductsOverview() {
               </div>
             </div>
 
-            {/* CTA Button */}
-            <Link
-              href={`/produkte#${activeCategory}`}
-              className="cta-button"
+            {/* CTA Button + Navigation Row */}
+            <div
               style={{
-                display: 'inline-flex',
+                display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                padding: '12px 22px',
-                background: 'white',
-                color: '#0f172a',
-                fontSize: '14px',
-                fontWeight: 600,
-                borderRadius: '10px',
-                transition: 'all 0.3s ease',
+                justifyContent: 'space-between',
+                gap: '24px',
+                flexWrap: 'wrap',
               }}
             >
-              <span>Alle Produkte ansehen</span>
-              <svg 
-                className="arrow-icon"
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2"
-                style={{ transition: 'transform 0.3s ease' }}
+              <Link
+                href={`/produkte#${activeCategory}`}
+                className="cta-button"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '12px 22px',
+                  background: 'white',
+                  color: '#0f172a',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  borderRadius: '10px',
+                  transition: 'all 0.3s ease',
+                }}
               >
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </Link>
+                <span>Alle Produkte ansehen</span>
+                <svg 
+                  className="arrow-icon"
+                  width="20" 
+                  height="20" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2"
+                  style={{ transition: 'transform 0.3s ease' }}
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </Link>
+
+              {/* Inline Category Navigation */}
+              <div
+                className="inline-nav"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                {categories.map((category) => {
+                  const isActive = category.id === activeCategory
+                  const categoryColors: Record<string, string> = {
+                    module: '#22c55e',
+                    wechselrichter: '#3b82f6',
+                    speicher: '#f59e0b',
+                  }
+                  const accentColor = categoryColors[category.id] || '#22c55e'
+                  
+                  return (
+                    <button
+                      key={`inline-${category.id}`}
+                      onClick={() => handleCategoryChange(category.id)}
+                      title={category.title}
+                      style={{
+                        width: isActive ? '32px' : '10px',
+                        height: '10px',
+                        background: isActive ? accentColor : 'rgba(255, 255, 255, 0.3)',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                      }}
+                    />
+                  )
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Right: Image Area */}
@@ -586,98 +633,8 @@ export function ProductsOverview() {
           </div>
         </div>
 
-        {/* Bottom Navigation Indicator */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '10px',
-            paddingTop: '24px',
-            paddingBottom: '40px',
-          }}
-        >
-          {/* Progress dots with labels */}
-          <div
-                style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
-          >
-            {categories.map((category, index) => {
-              const isActive = category.id === activeCategory
-              const categoryColors: Record<string, string> = {
-                module: '#22c55e',
-                wechselrichter: '#3b82f6',
-                speicher: '#f59e0b',
-              }
-              const accentColor = categoryColors[category.id] || '#22c55e'
-              
-              return (
-                <button
-                  key={`dot-${category.id}`}
-                  onClick={() => handleCategoryChange(category.id)}
-                  className="nav-dot"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: isActive ? '8px 16px' : '8px',
-                    background: isActive ? `${accentColor}22` : 'transparent',
-                    border: isActive ? `1px solid ${accentColor}` : '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: '999px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                  }}
-                  aria-label={`Zu ${category.title} wechseln`}
-                >
-                  <span
-                    style={{
-                      width: isActive ? '10px' : '8px',
-                      height: isActive ? '10px' : '8px',
-                      borderRadius: '50%',
-                      background: isActive ? accentColor : 'rgba(255, 255, 255, 0.4)',
-                      transition: 'all 0.3s ease',
-                    }}
-                  />
-                  {isActive && (
-                    <span
-                      style={{
-                        color: 'white',
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {category.title}
-                    </span>
-                  )}
-                </button>
-              )
-            })}
-                </div>
-
-          {/* Swipe hint for mobile */}
-          <p
-            className="swipe-hint"
-                      style={{
-              color: 'rgba(255, 255, 255, 0.4)',
-              fontSize: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-              gap: '6px',
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-            <span className="hint-text">Kategorie wechseln</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: 'rotate(180deg)' }}>
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-          </p>
-        </div>
+        {/* Bottom Spacing */}
+        <div style={{ paddingBottom: '40px' }} />
       </div>
 
       {/* CSS Animations */}
@@ -760,19 +717,6 @@ export function ProductsOverview() {
           opacity: 0 !important;
         }
 
-        .nav-dot:hover {
-          background: rgba(255, 255, 255, 0.1) !important;
-          border-color: rgba(255, 255, 255, 0.4) !important;
-        }
-
-        .swipe-hint {
-          animation: fadeInOut 3s ease-in-out infinite;
-        }
-
-        @keyframes fadeInOut {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.7; }
-        }
 
         .cta-button:hover {
           transform: translateY(-2px);
