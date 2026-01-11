@@ -209,32 +209,88 @@ export function ProductsOverview() {
 
       {/* Main content container */}
       <div className="container" style={{ position: 'relative', zIndex: 10 }}>
-        {/* Tab Navigation */}
+        {/* Section Header */}
+        <div
+          style={{
+            textAlign: 'center',
+            paddingTop: '60px',
+            paddingBottom: '24px',
+          }}
+        >
+          <span
+            style={{
+              display: 'inline-block',
+              padding: '6px 14px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '999px',
+              color: 'rgba(255, 255, 255, 0.8)',
+              fontSize: '12px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              marginBottom: '12px',
+            }}
+          >
+            Produktkategorien
+          </span>
+          <h3
+            style={{
+              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+              fontWeight: 700,
+              color: 'white',
+              marginBottom: '8px',
+            }}
+          >
+            Wählen Sie Ihren Bereich
+          </h3>
+              <p
+                style={{ 
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: '15px',
+            }}
+          >
+            Klicken Sie auf eine Kategorie, um mehr zu erfahren
+          </p>
+        </div>
+
+        {/* Tab Navigation - Enhanced */}
         <div 
+          className="tabs-container"
           style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: '8px',
-            paddingTop: '80px',
-            paddingBottom: '60px',
+            gap: '16px',
+            paddingBottom: '50px',
           }}
         >
-          {categories.map((category) => {
+          {categories.map((category, index) => {
             const isActive = category.id === activeCategory
+            const categoryColors: Record<string, string> = {
+              module: '#22c55e',
+              wechselrichter: '#3b82f6',
+              speicher: '#f59e0b',
+            }
+            const accentColor = categoryColors[category.id] || '#22c55e'
+            
             return (
               <button
                 key={category.id}
                 onClick={() => handleCategoryChange(category.id)}
-                className="category-tab"
+                className={`category-tab ${isActive ? 'active' : ''}`}
                 style={{
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '10px',
-                  padding: '14px 24px',
-                  background: isActive ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                  border: isActive ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '12px',
-                  color: isActive ? 'white' : 'rgba(255, 255, 255, 0.7)',
+                  gap: '12px',
+                  padding: '20px 32px',
+                  background: isActive 
+                    ? `linear-gradient(135deg, ${accentColor}22, ${accentColor}11)` 
+                    : 'rgba(255, 255, 255, 0.03)',
+                  border: isActive 
+                    ? `2px solid ${accentColor}` 
+                    : '2px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '16px',
+                  color: isActive ? 'white' : 'rgba(255, 255, 255, 0.6)',
                   fontSize: '15px',
                   fontWeight: isActive ? 600 : 500,
                   cursor: 'pointer',
@@ -242,26 +298,66 @@ export function ProductsOverview() {
                   backdropFilter: 'blur(10px)',
                   position: 'relative',
                   overflow: 'hidden',
+                  minWidth: '140px',
                 }}
               >
-                {/* Active indicator line */}
-                <span
-                  style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: isActive ? '60%' : '0%',
-                    height: '3px',
-                    background: 'white',
-                    borderRadius: '3px 3px 0 0',
-                    transition: 'width 0.3s ease',
+                {/* Pulse animation for non-active tabs */}
+                {!isActive && (
+                  <span
+                    className="pulse-ring"
+                    style={{
+                      position: 'absolute',
+                      inset: '-2px',
+                      borderRadius: '16px',
+                      border: '2px solid rgba(255, 255, 255, 0.2)',
+                      animation: 'pulse 2s ease-in-out infinite',
+                      animationDelay: `${index * 0.3}s`,
+                    }}
+                  />
+                )}
+                
+                {/* Icon container */}
+                <span 
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '48px',
+                    height: '48px',
+                    background: isActive ? accentColor : 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '12px',
+                    color: isActive ? 'white' : 'rgba(255, 255, 255, 0.7)',
+                    transition: 'all 0.3s ease',
                   }}
-                />
-                <span style={{ display: 'flex', alignItems: 'center' }}>
+                >
                   {category.icon}
                 </span>
-                <span className="tab-label">{category.title}</span>
+                
+                <span className="tab-label" style={{ fontWeight: isActive ? 700 : 500 }}>
+                  {category.title}
+                </span>
+                
+                {/* Active checkmark */}
+                {isActive && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '8px',
+                      width: '20px',
+                      height: '20px',
+                      background: accentColor,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </span>
+                )}
               </button>
             )
           })}
@@ -300,14 +396,14 @@ export function ProductsOverview() {
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
                 marginBottom: '20px',
-              }}
-            >
-              Unser Angebot
+                }}
+              >
+                Unser Angebot
             </span>
 
             {/* Title */}
-            <h2
-              style={{
+              <h2
+                style={{ 
                 fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
                 fontWeight: 800,
                 color: 'white',
@@ -316,7 +412,7 @@ export function ProductsOverview() {
               }}
             >
               {currentCategory.title}
-            </h2>
+              </h2>
 
             {/* Description */}
             <p
@@ -506,36 +602,97 @@ export function ProductsOverview() {
           </div>
         </div>
 
-        {/* Bottom Category Quick Links */}
+        {/* Bottom Navigation Indicator */}
         <div
           style={{
             display: 'flex',
-            justifyContent: 'center',
-            gap: '24px',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '16px',
             paddingTop: '40px',
-            paddingBottom: '80px',
+            paddingBottom: '60px',
           }}
         >
-          {categories.map((category) => {
-            const isActive = category.id === activeCategory
-            return (
-              <button
-                key={`quick-${category.id}`}
-                onClick={() => handleCategoryChange(category.id)}
+          {/* Progress dots with labels */}
+          <div
                 style={{
-                  width: '12px',
-                  height: '12px',
-                  borderRadius: '50%',
-                  background: isActive ? 'white' : 'rgba(255, 255, 255, 0.3)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  transform: isActive ? 'scale(1.2)' : 'scale(1)',
-                }}
-                aria-label={`Zu ${category.title} wechseln`}
-              />
-            )
-          })}
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            {categories.map((category, index) => {
+              const isActive = category.id === activeCategory
+              const categoryColors: Record<string, string> = {
+                module: '#22c55e',
+                wechselrichter: '#3b82f6',
+                speicher: '#f59e0b',
+              }
+              const accentColor = categoryColors[category.id] || '#22c55e'
+              
+              return (
+                <button
+                  key={`dot-${category.id}`}
+                  onClick={() => handleCategoryChange(category.id)}
+                  className="nav-dot"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: isActive ? '8px 16px' : '8px',
+                    background: isActive ? `${accentColor}22` : 'transparent',
+                    border: isActive ? `1px solid ${accentColor}` : '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '999px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                  }}
+                  aria-label={`Zu ${category.title} wechseln`}
+                >
+                  <span
+                    style={{
+                      width: isActive ? '10px' : '8px',
+                      height: isActive ? '10px' : '8px',
+                      borderRadius: '50%',
+                      background: isActive ? accentColor : 'rgba(255, 255, 255, 0.4)',
+                      transition: 'all 0.3s ease',
+                    }}
+                  />
+                  {isActive && (
+                    <span
+                      style={{
+                        color: 'white',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {category.title}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+                </div>
+
+          {/* Swipe hint for mobile */}
+          <p
+            className="swipe-hint"
+                      style={{
+              color: 'rgba(255, 255, 255, 0.4)',
+              fontSize: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+            <span className="hint-text">Kategorie wechseln</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: 'rotate(180deg)' }}>
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+          </p>
         </div>
       </div>
 
@@ -593,9 +750,44 @@ export function ProductsOverview() {
           animation: floatSlow 6s ease-in-out infinite reverse;
         }
 
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 0;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.02);
+          }
+        }
+
         .category-tab:hover {
-          background: rgba(255, 255, 255, 0.12) !important;
-          transform: translateY(-2px);
+          background: rgba(255, 255, 255, 0.08) !important;
+          transform: translateY(-3px);
+          border-color: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .category-tab.active:hover {
+          transform: translateY(-3px);
+        }
+
+        .category-tab:hover .pulse-ring {
+          animation: none !important;
+          opacity: 0 !important;
+        }
+
+        .nav-dot:hover {
+          background: rgba(255, 255, 255, 0.1) !important;
+          border-color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        .swipe-hint {
+          animation: fadeInOut 3s ease-in-out infinite;
+        }
+
+        @keyframes fadeInOut {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.7; }
         }
 
         .cta-button:hover {
@@ -637,7 +829,12 @@ export function ProductsOverview() {
           }
 
           .category-tab {
-            padding: 12px 16px !important;
+            padding: 16px !important;
+            min-width: auto !important;
+          }
+
+          .tabs-container {
+            gap: 8px !important;
           }
 
           .image-area {
@@ -647,6 +844,10 @@ export function ProductsOverview() {
           .product-image-container {
             max-width: 280px !important;
             height: 280px !important;
+          }
+
+          .hint-text {
+            display: none;
           }
         }
       `}</style>
