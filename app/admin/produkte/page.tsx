@@ -1,13 +1,8 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import { AdminSidebar } from '@/components/admin/AdminSidebar'
-import { Card } from '@/components/ui/Card'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
 import Link from 'next/link'
 import { 
   Plus, 
@@ -22,7 +17,8 @@ import {
   Zap,
   Star,
   Eye,
-  EyeOff
+  EyeOff,
+  AlertTriangle
 } from 'lucide-react'
 
 interface Brand {
@@ -50,15 +46,13 @@ interface Product {
   updatedAt: string
 }
 
-const categoryLabels: Record<string, { label: string; icon: typeof Sun; color: string }> = {
-  module: { label: 'Solarmodule', icon: Sun, color: 'bg-amber-100 text-amber-700' },
-  wechselrichter: { label: 'Wechselrichter', icon: Zap, color: 'bg-blue-100 text-blue-700' },
-  speicher: { label: 'Speicher', icon: Battery, color: 'bg-green-100 text-green-700' },
+const categoryLabels: Record<string, { label: string; icon: typeof Sun; color: string; bgColor: string }> = {
+  module: { label: 'Solarmodule', icon: Sun, color: 'text-amber-400', bgColor: 'bg-amber-500/10 border-amber-500/20' },
+  wechselrichter: { label: 'Wechselrichter', icon: Zap, color: 'text-blue-400', bgColor: 'bg-blue-500/10 border-blue-500/20' },
+  speicher: { label: 'Speicher', icon: Battery, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10 border-emerald-500/20' },
 }
 
 export default function AdminProduktePage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
   const [brands, setBrands] = useState<Brand[]>([])
   const [loading, setLoading] = useState(true)
@@ -67,12 +61,6 @@ export default function AdminProduktePage() {
   const [brandFilter, setBrandFilter] = useState<string>('')
   const [showFilters, setShowFilters] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/admin/login')
-    }
-  }, [status, router])
 
   useEffect(() => {
     fetchProducts()
@@ -173,274 +161,311 @@ export default function AdminProduktePage() {
     return acc
   }, {} as Record<string, Product[]>)
 
-  if (status === 'loading' || !session) {
-    return (
-      <div className="min-h-screen bg-background-secondary flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-energia-primary border-t-transparent rounded-full" />
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-background-secondary">
-      <AdminSidebar />
-      
-      <main className="pt-20 xl:pt-6 xl:ml-64 px-4 sm:px-6 pb-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Produkte</h1>
-              <p className="text-foreground-muted mt-1">
-                {products.length} Produkte in der Datenbank
-              </p>
-            </div>
-            <Link href="/admin/produkte/neu">
-              <Button variant="primary" leftIcon={<Plus className="w-4 h-4" />}>
-                Neues Produkt
-              </Button>
-            </Link>
+    <>
+      {/* Header */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"
+      >
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Produkte</h1>
+          <p className="text-foreground-secondary mt-1">
+            {products.length} Produkte in der Datenbank
+          </p>
+        </div>
+        <Link href="/admin/produkte/neu">
+          <Button variant="primary" leftIcon={<Plus className="w-4 h-4" />}>
+            Neues Produkt
+          </Button>
+        </Link>
+      </motion.div>
+
+      {/* Search & Filters */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6"
+      >
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-muted" />
+            <input
+              type="text"
+              placeholder="Produkte durchsuchen..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full h-12 pl-12 pr-4 rounded-xl border border-border bg-card text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+            />
           </div>
 
-          {/* Search & Filters */}
-          <Card variant="default" padding="md" className="mb-6">
-            <div className="flex flex-col lg:flex-row gap-4">
-              {/* Search */}
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-muted" />
-                <input
-                  type="text"
-                  placeholder="Produkte durchsuchen..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full h-12 pl-12 pr-4 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-energia-primary"
-                />
+          {/* Filter Toggle */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center justify-center gap-2 h-12 px-6 rounded-xl border border-border bg-card text-foreground-secondary hover:bg-background-secondary hover:text-foreground transition-all"
+          >
+            <Filter className="w-4 h-4" />
+            Filter
+            <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
+
+        {/* Expanded Filters */}
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-4 pt-4 border-t border-border overflow-hidden"
+            >
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground-secondary mb-2">
+                    Kategorie
+                  </label>
+                  <select
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value)}
+                    className="w-full h-12 px-4 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                  >
+                    <option value="">Alle Kategorien</option>
+                    <option value="module">Solarmodule</option>
+                    <option value="wechselrichter">Wechselrichter</option>
+                    <option value="speicher">Speicher</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground-secondary mb-2">
+                    Marke
+                  </label>
+                  <select
+                    value={brandFilter}
+                    onChange={(e) => setBrandFilter(e.target.value)}
+                    className="w-full h-12 px-4 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                  >
+                    <option value="">Alle Marken</option>
+                    {brands.map(brand => (
+                      <option key={brand.id} value={brand.id}>{brand.name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
-              {/* Filter Toggle */}
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                leftIcon={<Filter className="w-4 h-4" />}
-                rightIcon={<ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />}
+      {/* Products List */}
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : filteredProducts.length === 0 ? (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-background-secondary border border-border rounded-2xl text-center py-16"
+        >
+          <div className="w-16 h-16 bg-card rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Package className="w-8 h-8 text-foreground-muted" />
+          </div>
+          <p className="text-foreground-secondary mb-4">
+            {searchTerm || categoryFilter || brandFilter 
+              ? 'Keine Produkte gefunden' 
+              : 'Noch keine Produkte erstellt'}
+          </p>
+          <Link href="/admin/produkte/neu">
+            <Button variant="primary">
+              Erstes Produkt erstellen
+            </Button>
+          </Link>
+        </motion.div>
+      ) : (
+        <div className="space-y-8">
+          {Object.entries(groupedProducts).map(([category, categoryProducts], categoryIndex) => {
+            const categoryInfo = categoryLabels[category] || { 
+              label: category, 
+              icon: Package, 
+              color: 'text-slate-400',
+              bgColor: 'bg-slate-500/10 border-slate-500/20'
+            }
+            const CategoryIcon = categoryInfo.icon
+            
+            return (
+              <motion.div 
+                key={category}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + categoryIndex * 0.1 }}
               >
-                Filter
-              </Button>
-            </div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${categoryInfo.bgColor}`}>
+                    <CategoryIcon className={`w-5 h-5 ${categoryInfo.color}`} />
+                  </div>
+                  <h2 className="text-xl font-semibold text-foreground">
+                    {categoryInfo.label}
+                  </h2>
+                  <span className="px-2.5 py-1 rounded-lg bg-card text-foreground-secondary text-sm font-medium">
+                    {categoryProducts.length}
+                  </span>
+                </div>
 
-            {/* Expanded Filters */}
-            {showFilters && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-4 pt-4 border-t border-border"
-              >
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Kategorie
-                    </label>
-                    <select
-                      value={categoryFilter}
-                      onChange={(e) => setCategoryFilter(e.target.value)}
-                      className="w-full h-12 px-4 rounded-xl border border-border bg-card text-foreground"
+                <div className="space-y-3">
+                  {categoryProducts.map((product, index) => (
+                    <motion.div
+                      key={product.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, delay: index * 0.03 }}
                     >
-                      <option value="">Alle Kategorien</option>
-                      <option value="module">Solarmodule</option>
-                      <option value="wechselrichter">Wechselrichter</option>
-                      <option value="speicher">Speicher</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Marke
-                    </label>
-                    <select
-                      value={brandFilter}
-                      onChange={(e) => setBrandFilter(e.target.value)}
-                      className="w-full h-12 px-4 rounded-xl border border-border bg-card text-foreground"
-                    >
-                      <option value="">Alle Marken</option>
-                      {brands.map(brand => (
-                        <option key={brand.id} value={brand.id}>{brand.name}</option>
-                      ))}
-                    </select>
-                  </div>
+                      <div className={`
+                        bg-background-secondary border border-border rounded-xl overflow-hidden
+                        hover:border-border-light transition-all group
+                        ${!product.isActive ? 'opacity-60' : ''}
+                      `}>
+                        <div className="flex flex-col lg:flex-row lg:items-center gap-4 p-4">
+                          {/* Product Image */}
+                          <div className="w-16 h-16 rounded-xl bg-card flex items-center justify-center shrink-0 overflow-hidden border border-border">
+                            {product.imageUrl ? (
+                              <img 
+                                src={product.imageUrl} 
+                                alt={product.name}
+                                className="w-full h-full object-contain"
+                              />
+                            ) : (
+                              <Package className="w-8 h-8 text-foreground-muted" />
+                            )}
+                          </div>
+
+                          {/* Product Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-foreground truncate">
+                                {product.name}
+                              </h3>
+                              {product.featured && (
+                                <Star className="w-4 h-4 text-amber-400 fill-amber-400 shrink-0" />
+                              )}
+                              {!product.isActive && (
+                                <span className="px-2 py-0.5 rounded text-xs bg-card text-foreground-secondary border border-border">
+                                  Inaktiv
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-foreground-secondary truncate">
+                              {product.subtitle}
+                            </p>
+                            <div className="flex items-center gap-3 mt-2 flex-wrap">
+                              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-500/20">
+                                {product.brand.name}
+                              </span>
+                              {product.specs.slice(0, 3).map((spec, i) => (
+                                <span key={i} className="text-xs text-foreground-secondary">
+                                  {spec}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              onClick={() => toggleFeatured(product)}
+                              className={`p-2.5 rounded-xl transition-colors ${
+                                product.featured 
+                                  ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' 
+                                  : 'bg-card text-foreground-muted hover:text-amber-400 border border-border'
+                              }`}
+                              title={product.featured ? 'Von Startseite entfernen' : 'Auf Startseite anzeigen'}
+                            >
+                              <Star className={`w-4 h-4 ${product.featured ? 'fill-amber-400' : ''}`} />
+                            </button>
+                            <button
+                              onClick={() => toggleActive(product)}
+                              className={`p-2.5 rounded-xl transition-colors ${
+                                product.isActive 
+                                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                                  : 'bg-card text-foreground-muted border border-border'
+                              }`}
+                              title={product.isActive ? 'Deaktivieren' : 'Aktivieren'}
+                            >
+                              {product.isActive ? (
+                                <Eye className="w-4 h-4" />
+                              ) : (
+                                <EyeOff className="w-4 h-4" />
+                              )}
+                            </button>
+                            <Link href={`/admin/produkte/${product.id}`}>
+                              <button className="p-2.5 rounded-xl bg-card text-foreground-secondary hover:text-foreground border border-border hover:border-border-light transition-colors">
+                                <Edit className="w-4 h-4" />
+                              </button>
+                            </Link>
+                            <button
+                              className="p-2.5 rounded-xl bg-card text-foreground-secondary hover:bg-red-500/10 hover:text-red-400 border border-border hover:border-red-500/20 transition-colors"
+                              onClick={() => setDeleteId(product.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </motion.div>
-            )}
-          </Card>
-
-          {/* Products List */}
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin w-8 h-8 border-4 border-energia-primary border-t-transparent rounded-full" />
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <Card variant="bordered" className="text-center py-12">
-              <Package className="w-12 h-12 text-foreground-muted mx-auto mb-4" />
-              <p className="text-foreground-muted">
-                {searchTerm || categoryFilter || brandFilter 
-                  ? 'Keine Produkte gefunden' 
-                  : 'Noch keine Produkte erstellt'}
-              </p>
-              <Link href="/admin/produkte/neu">
-                <Button variant="primary" className="mt-4">
-                  Erstes Produkt erstellen
-                </Button>
-              </Link>
-            </Card>
-          ) : (
-            <div className="space-y-8">
-              {Object.entries(groupedProducts).map(([category, categoryProducts]) => {
-                const categoryInfo = categoryLabels[category] || { label: category, icon: Package, color: 'bg-gray-100 text-gray-700' }
-                const CategoryIcon = categoryInfo.icon
-                
-                return (
-                  <div key={category}>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${categoryInfo.color}`}>
-                        <CategoryIcon className="w-5 h-5" />
-                      </div>
-                      <h2 className="text-xl font-semibold text-foreground">
-                        {categoryInfo.label}
-                      </h2>
-                      <Badge variant="default" size="sm">{categoryProducts.length}</Badge>
-                    </div>
-
-                    <div className="grid gap-4">
-                      {categoryProducts.map((product, index) => (
-                        <motion.div
-                          key={product.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.05 }}
-                        >
-                          <Card variant="default" className={`overflow-hidden ${!product.isActive ? 'opacity-60' : ''}`}>
-                            <div className="flex flex-col lg:flex-row lg:items-center gap-4 p-4">
-                              {/* Product Image */}
-                              <div className="w-16 h-16 rounded-xl bg-background-secondary flex items-center justify-center shrink-0 overflow-hidden">
-                                {product.imageUrl ? (
-                                  <img 
-                                    src={product.imageUrl} 
-                                    alt={product.name}
-                                    className="w-full h-full object-contain"
-                                  />
-                                ) : (
-                                  <Package className="w-8 h-8 text-foreground-muted" />
-                                )}
-                              </div>
-
-                              {/* Product Info */}
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h3 className="font-semibold text-foreground truncate">
-                                    {product.name}
-                                  </h3>
-                                  {product.featured && (
-                                    <Star className="w-4 h-4 text-amber-500 fill-amber-500 shrink-0" />
-                                  )}
-                                  {!product.isActive && (
-                                    <Badge variant="default" size="sm">Inaktiv</Badge>
-                                  )}
-                                </div>
-                                <p className="text-sm text-foreground-secondary truncate">
-                                  {product.subtitle}
-                                </p>
-                                <div className="flex items-center gap-3 mt-2">
-                                  <Badge variant="energia" size="sm">{product.brand.name}</Badge>
-                                  {product.specs.slice(0, 3).map((spec, i) => (
-                                    <span key={i} className="text-xs text-foreground-muted">
-                                      {spec}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-
-                              {/* Actions */}
-                              <div className="flex items-center gap-2 shrink-0">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => toggleFeatured(product)}
-                                  title={product.featured ? 'Von Startseite entfernen' : 'Auf Startseite anzeigen'}
-                                >
-                                  <Star className={`w-4 h-4 ${product.featured ? 'text-amber-500 fill-amber-500' : 'text-foreground-muted'}`} />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => toggleActive(product)}
-                                  title={product.isActive ? 'Deaktivieren' : 'Aktivieren'}
-                                >
-                                  {product.isActive ? (
-                                    <Eye className="w-4 h-4 text-energia-primary" />
-                                  ) : (
-                                    <EyeOff className="w-4 h-4 text-foreground-muted" />
-                                  )}
-                                </Button>
-                                <Link href={`/admin/produkte/${product.id}`}>
-                                  <Button variant="ghost" size="sm">
-                                    <Edit className="w-4 h-4" />
-                                  </Button>
-                                </Link>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-red-500 hover:bg-red-50"
-                                  onClick={() => setDeleteId(product.id)}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          </Card>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-      </main>
-
-      {/* Delete Confirmation Modal */}
-      {deleteId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-6 max-w-md w-full"
-          >
-            <h3 className="text-xl font-semibold text-foreground mb-2">
-              Produkt löschen?
-            </h3>
-            <p className="text-foreground-secondary mb-6">
-              Möchten Sie dieses Produkt wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
-            </p>
-            <div className="flex gap-4">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => setDeleteId(null)}
-              >
-                Abbrechen
-              </Button>
-              <Button
-                variant="primary"
-                className="flex-1 bg-red-500 hover:bg-red-600"
-                onClick={() => handleDelete(deleteId)}
-              >
-                Löschen
-              </Button>
-            </div>
-          </motion.div>
+            )
+          })}
         </div>
       )}
-    </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteId && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => setDeleteId(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-background-secondary border border-border rounded-2xl p-6 max-w-md w-full shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-7 h-7 text-red-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-foreground text-center mb-2">
+                Produkt löschen?
+              </h3>
+              <p className="text-foreground-secondary text-center mb-6">
+                Möchten Sie dieses Produkt wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  className="flex-1 h-12 rounded-xl border border-border bg-card text-foreground-secondary hover:bg-background-secondary hover:text-foreground transition-colors font-medium"
+                  onClick={() => setDeleteId(null)}
+                >
+                  Abbrechen
+                </button>
+                <button
+                  className="flex-1 h-12 rounded-xl bg-red-500 hover:bg-red-600 text-white transition-colors font-medium"
+                  onClick={() => handleDelete(deleteId)}
+                >
+                  Löschen
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
-

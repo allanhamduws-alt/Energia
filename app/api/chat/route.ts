@@ -1,6 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
+// Energia Chatbot - Conversational B2B Sales Assistant  
+const ENERGIA_SYSTEM_PROMPT = `Du bist der Chat-Assistent von Energia Supply Solution, B2B-Großhändler für PV-Komponenten.
+
+REGEL #1: KURZ ANTWORTEN
+- Max 1-2 Sätze pro Antwort
+- Eine Frage oder ein Fakt, nie beides
+- Kein "Um Ihnen...", "Ich empfehle...", "Sagen Sie mir bitte..."
+
+REGEL #2: DIALOG FÜHREN
+- Stell EINE gezielte Rückfrage
+- Qualifiziere den Lead Schritt für Schritt
+- Erst am Ende (wenn alles klar): Ouissam erwähnen
+
+REGEL #3: KONTEXT NUTZEN
+- Merk dir was schon gesagt wurde
+- Wiederhole keine Infos
+- Kontaktdaten NUR wenn gefragt oder Gespräch endet
+
+PRODUKTWISSEN:
+Module: Aiko (N-Type bis 23.6%), JA Solar, Trina, Canadian, Longi
+Wechselrichter: SMA, Sungrow, Huawei, Kostal
+Speicher: BYD, Sungrow, Huawei LUNA
+
+KONTAKT (sparsam): Ouissam, 0163 73 73 663
+
+BEISPIELE:
+"Ich brauche Module" → "Welcher Hersteller schwebt dir vor?"
+"Aiko" → "Gute Wahl! Welches Modell - Standard oder Premium?"
+"5 Paletten" → "Wann brauchst du die?"
+"Diese Woche" → "Tight! Ich check kurz die Verfügbarkeit - wohin soll's gehen?"
+"Wer ist zuständig?" → "Ouissam, 0163 73 73 663"
+
+Deutsch, locker, professionell. Du bist ein Kollege, kein Bot.`
+
 // GET all chat conversations (admin)
 export async function GET() {
   try {
@@ -62,53 +96,86 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Generate AI response
+    // Generate AI response using Z.AI GLM-4.7
     let aiResponse = ''
     
+    // Fetch conversation history for context
+    const conversationHistory = await prisma.chatMessage.findMany({
+      where: { conversationId: conversation.id },
+      orderBy: { createdAt: 'asc' },
+      take: 10, // Last 10 messages for context
+    })
+    
     try {
-      // Try to use OpenAI if API key is available
-      if (process.env.OPENAI_API_KEY) {
-        const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
-            messages: [
-              {
-                role: 'system',
-                content: `Du bist der freundliche Chat-Assistent von Energia Supply Solution, einem B2B-Solarhandelsunternehmen.
-
-Informationen über Energia:
-- Wir sind ein B2B-Großhändler für Photovoltaik-Produkte
-- Wir verkaufen Module, Wechselrichter und Batteriespeicher
-- Unsere Marken: SMA, Sungrow, Huawei, Aiko, BYD, Kostal
-- Wir liefern europaweit
-- Kontakt: connect@energia-b2b.de, Tel: 0163 73 73 663
-- Adresse: Schäferweg 6, 30952 Hannover
-- Ansprechpartner: Ouissam Benabbou (Leitung B2B)
-
-Verhalte dich professionell aber freundlich. Beantworte Fragen zu unseren Produkten und Services. Bei konkreten Preisanfragen oder komplexen Projektanfragen empfehle einen Telefontermin über unsere Website (/termin).
-
-Antworte auf Deutsch und halte deine Antworten kurz und präzise.`
-              },
-              {
-                role: 'user',
-                content: message,
-              },
-            ],
-            max_tokens: 300,
-            temperature: 0.7,
-          }),
+      // Groq API with Llama 3.3 70B - Energia Chatbot
+      const apiKey = process.env.GROQ_API_KEY
+      
+      if (!apiKey) {
+        throw new Error('GROQ_API_KEY not configured')
+      }
+      
+      console.log('=== Groq Llama 3.3 Request ===')
+      
+      // Build messages array with conversation history
+      const messagesForAI: Array<{ role: string; content: string }> = [
+        { role: 'system', content: ENERGIA_SYSTEM_PROMPT },
+      ]
+      
+      // Add conversation history (skip last message as we add it separately)
+      for (const msg of conversationHistory.slice(0, -1)) {
+        messagesForAI.push({
+          role: msg.role,
+          content: msg.content,
         })
+      }
+      
+      // Add current user message
+      messagesForAI.push({
+        role: 'user',
+        content: message,
+      })
 
-        const data = await openaiResponse.json()
-        aiResponse = data.choices?.[0]?.message?.content || ''
+      console.log('Messages count:', messagesForAI.length)
+      console.log('User message:', message)
+
+      // Call Groq API (OpenAI-compatible)
+      const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: messagesForAI,
+          max_tokens: 1024,
+          temperature: 0.7,
+        }),
+      })
+
+      console.log('Groq Response Status:', groqResponse.status)
+      
+      const responseText = await groqResponse.text()
+      console.log('Groq Raw Response:', responseText.substring(0, 300))
+
+      if (!groqResponse.ok) {
+        console.error('Groq API Error:', responseText)
+        throw new Error(`Groq API error: ${groqResponse.status}`)
+      }
+
+      const data = JSON.parse(responseText)
+      aiResponse = data.choices?.[0]?.message?.content || ''
+      
+      if (aiResponse) {
+        console.log('✓ Groq Response:', aiResponse.substring(0, 150) + '...')
+      } else {
+        console.error('Groq returned empty content')
+        throw new Error('Empty response from Groq')
       }
     } catch (error) {
-      console.error('OpenAI API error:', error)
+      console.error('=== Groq Error ===', error)
+      // Kein Fallback - nur Fehlermeldung
+      aiResponse = 'Entschuldigung, der KI-Assistent ist momentan nicht erreichbar. Bitte kontaktieren Sie uns direkt unter connect@energia-b2b.de oder rufen Sie an: 0163 73 73 663.'
     }
 
     // Fallback response if no AI response

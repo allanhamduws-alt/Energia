@@ -32,9 +32,9 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     
     const paddings = {
       none: '',
-      sm: 'p-4',
-      md: 'p-6',
-      lg: 'p-8',
+      sm: 'p-7',       // 28px
+      md: 'p-9',       // 36px
+      lg: 'p-12',      // 48px - deutlich mehr Luft!
     }
     
     const hoverStyles = hover

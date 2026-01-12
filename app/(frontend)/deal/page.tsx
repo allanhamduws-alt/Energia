@@ -86,7 +86,7 @@ export default function DealPage() {
   const currentDeal = deal || fallbackDeal
 
   return (
-    <main style={{ paddingTop: '80px' }}>
+    <main>
       {/* Hero Section with Gold Accents */}
       <section
         ref={heroRef}

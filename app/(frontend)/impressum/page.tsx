@@ -6,8 +6,8 @@ export const metadata: Metadata = {
 
 export default function ImpressumPage() {
   return (
-    <main style={{ paddingTop: '120px' }}>
-      <section style={{ paddingTop: '80px', paddingBottom: '120px' }}>
+    <main>
+      <section style={{ paddingTop: '40px', paddingBottom: '120px' }}>
         <div className="container" style={{ maxWidth: '800px', margin: '0 auto' }}>
           <h1 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, color: '#171717', marginBottom: '48px' }}>
             Impressum

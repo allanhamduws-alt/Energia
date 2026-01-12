@@ -80,7 +80,7 @@ export default function MarkenPage() {
 
   if (loading) {
     return (
-      <main style={{ paddingTop: '80px', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
           <div
             style={{
@@ -105,7 +105,7 @@ export default function MarkenPage() {
   }
 
   return (
-    <main style={{ paddingTop: '80px' }}>
+    <main>
       {/* Hero Section */}
       <section
         ref={heroRef}

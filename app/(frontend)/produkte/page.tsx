@@ -151,7 +151,7 @@ export default function ProduktePage() {
 
 function ProdukteLoading() {
   return (
-    <main style={{ paddingTop: '80px', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center' }}>
         <div
           style={{
@@ -265,7 +265,7 @@ function ProdukteContent() {
 
   if (loading) {
     return (
-      <main style={{ paddingTop: '80px', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
           <div
             style={{
@@ -290,7 +290,7 @@ function ProdukteContent() {
   }
 
   return (
-    <main style={{ paddingTop: '80px' }}>
+    <main>
       {/* Hero Section with Gradient Background */}
       <section
         style={{

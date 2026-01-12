@@ -103,11 +103,11 @@ export default function KontaktPage() {
     fontSize: '14px',
     fontWeight: 600,
     color: 'var(--gray-700)',
-    marginBottom: '8px',
+    marginBottom: '10px',
   }
 
   return (
-    <main style={{ paddingTop: '80px' }}>
+    <main>
       {/* Hero Section */}
       <section
         ref={heroRef}
@@ -355,8 +355,8 @@ export default function KontaktPage() {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                     <div>
                       <label style={labelStyles}>Vorname *</label>
                       <input
@@ -393,7 +393,7 @@ export default function KontaktPage() {
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                     <div>
                       <label style={labelStyles}>E-Mail *</label>
                       <input

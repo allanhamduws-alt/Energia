@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -276,6 +276,35 @@ model ProductInquiry {
   
   // Admin Notizen
   adminNotes  String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Website-Einstellungen (Singleton)
+model Settings {
+  id          String   @id @default("default")
+  
+  // Firmendaten
+  companyName    String   @default("Energia Supply Solution GmbH")
+  companyEmail   String   @default("info@energia-supply.de")
+  companyPhone   String   @default("+49 123 456789")
+  companyAddress String   @default("Musterstraße 1, 12345 Musterstadt")
+  openingHours   String   @default("Mo-Fr: 8:00-17:00 Uhr")
+  
+  // Social Media Links
+  facebookUrl    String?
+  instagramUrl   String?
+  linkedinUrl    String?
+  youtubeUrl     String?
+  
+  // SEO-Einstellungen
+  metaTitle       String   @default("Energia - Ihr Partner für Photovoltaik")
+  metaDescription String   @default("Energia Supply Solution - Großhandel für Solarmodule, Wechselrichter und Batteriespeicher.")
+  metaKeywords    String?
+  
+  // Benachrichtigungen (JSON Object)
+  notifications   String   @default("{\"newAppointment\":true,\"newContact\":true,\"newChat\":true}")
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -172,11 +172,11 @@ export function InquiryForm({ onBack, onSuccess }: InquiryFormProps) {
       </div>
 
       {/* Form fields */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {/* Name row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '8px' }}>
               Vorname *
             </label>
             <input
@@ -199,7 +199,7 @@ export function InquiryForm({ onBack, onSuccess }: InquiryFormProps) {
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '8px' }}>
               Nachname *
             </label>
             <input
@@ -225,7 +225,7 @@ export function InquiryForm({ onBack, onSuccess }: InquiryFormProps) {
 
         {/* Company */}
         <div>
-          <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '6px' }}>
+          <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '8px' }}>
             Firma *
           </label>
           <input
@@ -250,7 +250,7 @@ export function InquiryForm({ onBack, onSuccess }: InquiryFormProps) {
 
         {/* Email */}
         <div>
-          <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '6px' }}>
+          <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '8px' }}>
             E-Mail *
           </label>
           <input
@@ -275,7 +275,7 @@ export function InquiryForm({ onBack, onSuccess }: InquiryFormProps) {
 
         {/* Phone */}
         <div>
-          <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '6px' }}>
+          <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '8px' }}>
             Telefon *
           </label>
           <input
@@ -300,7 +300,7 @@ export function InquiryForm({ onBack, onSuccess }: InquiryFormProps) {
 
         {/* Message */}
         <div>
-          <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '6px' }}>
+          <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: 'var(--gray-700)', marginBottom: '8px' }}>
             Nachricht (optional)
           </label>
           <textarea

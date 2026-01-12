@@ -13,7 +13,9 @@ export default function FrontendLayout({
   return (
     <InquiryCartProvider>
       <Header />
-      {children}
+      <div className="pt-[80px]">
+        {children}
+      </div>
       <Footer />
       <ChatWidget />
       <CookieBanner />

@@ -75,7 +75,7 @@ export default function TerminPage() {
   }
 
   return (
-    <main style={{ paddingTop: '80px' }}>
+    <main>
       {/* Hero Section */}
       <section
         ref={heroRef}

@@ -21,10 +21,10 @@ const Section = forwardRef<HTMLElement, SectionProps>(
     }
     
     const paddings = {
-      sm: 'py-6 sm:py-8 md:py-12',
-      md: 'py-8 sm:py-12 md:py-16',
-      lg: 'py-10 sm:py-14 md:py-20 lg:py-24',
-      xl: 'py-12 sm:py-16 md:py-24 lg:py-32',
+      sm: 'py-8 sm:py-10 md:py-14',
+      md: 'py-10 sm:py-14 md:py-20',
+      lg: 'py-12 sm:py-16 md:py-24 lg:py-28',
+      xl: 'py-16 sm:py-20 md:py-28 lg:py-36',
     }
 
     return (
@@ -52,14 +52,14 @@ const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
     return (
       <div
         className={cn(
-          'mb-8 sm:mb-10 md:mb-12',
+          'mb-10 sm:mb-12 md:mb-16',
           centered && 'text-center',
           className
         )}
         ref={ref}
         {...props}
       >
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 sm:mb-5">
           {title}
         </h2>
         {subtitle && (

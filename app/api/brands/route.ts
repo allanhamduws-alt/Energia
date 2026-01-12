@@ -26,17 +26,22 @@ export async function GET(request: NextRequest) {
 
     const brands = await prisma.brand.findMany({
       where,
-      include: withProducts === 'true' ? {
-        products: {
-          where: { isActive: true },
-          select: {
-            id: true,
-            name: true,
-            category: true,
-          },
-          orderBy: { sortOrder: 'asc' },
+      include: {
+        _count: {
+          select: { products: true }
         },
-      } : undefined,
+        ...(withProducts === 'true' ? {
+          products: {
+            where: { isActive: true },
+            select: {
+              id: true,
+              name: true,
+              category: true,
+            },
+            orderBy: { sortOrder: 'asc' },
+          },
+        } : {}),
+      },
       orderBy: { sortOrder: 'asc' },
     })
 

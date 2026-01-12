@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -151,45 +150,35 @@ export default function AdminMarkeBearbeitenPage() {
     }))
   }
 
+  // Auth wird vom AdminLayoutWrapper gehandhabt
   if (status === 'loading' || !session) {
-    return (
-      <div className="min-h-screen bg-background-secondary flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-energia-primary border-t-transparent rounded-full" />
-      </div>
-    )
+    return null
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background-secondary">
-        <AdminSidebar />
-        <main className="pt-20 xl:pt-6 xl:ml-64 px-4 sm:px-6 pb-8 flex items-center justify-center min-h-screen">
-          <Loader2 className="w-8 h-8 animate-spin text-energia-primary" />
-        </main>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background-secondary">
-      <AdminSidebar />
-      
-      <main className="pt-20 xl:pt-6 xl:ml-64 px-4 sm:px-6 pb-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="mb-6 sm:mb-8">
-            <Link 
-              href="/admin/marken"
-              className="inline-flex items-center gap-2 text-foreground-muted hover:text-foreground mb-4 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Zurück zur Übersicht
-            </Link>
-            <h1 className="text-3xl font-bold text-foreground">Marke bearbeiten</h1>
-            <p className="text-foreground-muted mt-1">
-              {formData.name || 'Laden...'}
-            </p>
-          </div>
+    <div className="max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="mb-6 sm:mb-8">
+        <Link 
+          href="/admin/marken"
+          className="inline-flex items-center gap-2 text-slate-400 hover:text-white mb-4 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Zurück zur Übersicht
+        </Link>
+        <h1 className="text-3xl font-bold text-white">Marke bearbeiten</h1>
+        <p className="text-slate-400 mt-1">
+          {formData.name || 'Laden...'}
+        </p>
+      </div>
 
           {error && (
             <motion.div
@@ -203,12 +192,12 @@ export default function AdminMarkeBearbeitenPage() {
 
           <form onSubmit={handleSubmit}>
             {/* Basic Info */}
-            <Card variant="default" padding="lg" className="mb-6">
-              <h2 className="text-xl font-semibold text-foreground mb-6">
+            <Card variant="default" padding="lg" className="mb-16">
+              <h2 className="text-xl font-semibold text-foreground mb-10">
                 Grundinformationen
               </h2>
               
-              <div className="space-y-4">
+              <div className="space-y-8">
                 <Input
                   label="Markenname *"
                   value={formData.name}
@@ -252,15 +241,15 @@ export default function AdminMarkeBearbeitenPage() {
             </Card>
 
             {/* Categories */}
-            <Card variant="default" padding="lg" className="mb-6">
+            <Card variant="default" padding="lg" className="mb-16">
               <h2 className="text-xl font-semibold text-foreground mb-4">
                 Produktkategorien
               </h2>
-              <p className="text-sm text-foreground-muted mb-4">
+              <p className="text-sm text-foreground-muted mb-8">
                 In welchen Kategorien bietet diese Marke Produkte an?
               </p>
               
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-5">
                 {[
                   { id: 'module', label: 'Solarmodule' },
                   { id: 'wechselrichter', label: 'Wechselrichter' },
@@ -285,17 +274,17 @@ export default function AdminMarkeBearbeitenPage() {
             </Card>
 
             {/* Highlights */}
-            <Card variant="default" padding="lg" className="mb-6">
+            <Card variant="default" padding="lg" className="mb-16">
               <h2 className="text-xl font-semibold text-foreground mb-4">
                 Highlights
               </h2>
-              <p className="text-sm text-foreground-muted mb-4">
+              <p className="text-sm text-foreground-muted mb-8">
                 Besondere Merkmale wie &quot;Made in Germany&quot;, &quot;Premium&quot;, etc.
               </p>
               
-              <div className="space-y-3">
+              <div className="space-y-6">
                 {formData.highlights.map((highlight, index) => (
-                  <div key={index} className="flex gap-2">
+                  <div key={index} className="flex gap-4">
                     <Input
                       value={highlight}
                       onChange={(e) => updateHighlight(index, e.target.value)}
@@ -324,12 +313,12 @@ export default function AdminMarkeBearbeitenPage() {
             </Card>
 
             {/* Settings */}
-            <Card variant="default" padding="lg" className="mb-6">
-              <h2 className="text-xl font-semibold text-foreground mb-6">
+            <Card variant="default" padding="lg" className="mb-16">
+              <h2 className="text-xl font-semibold text-foreground mb-10">
                 Einstellungen
               </h2>
               
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-8">
                 <Input
                   label="Sortierung"
                   type="number"
@@ -340,7 +329,7 @@ export default function AdminMarkeBearbeitenPage() {
                 />
               </div>
 
-              <div className="mt-4">
+              <div className="mt-8">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -353,25 +342,23 @@ export default function AdminMarkeBearbeitenPage() {
               </div>
             </Card>
 
-            {/* Submit */}
-            <div className="flex gap-4">
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={saving}
-                leftIcon={saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              >
-                {saving ? 'Speichern...' : 'Änderungen speichern'}
+          {/* Submit */}
+          <div className="flex gap-6">
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={saving}
+              leftIcon={saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            >
+              {saving ? 'Speichern...' : 'Änderungen speichern'}
+            </Button>
+            <Link href="/admin/marken">
+              <Button type="button" variant="outline">
+                Abbrechen
               </Button>
-              <Link href="/admin/marken">
-                <Button type="button" variant="outline">
-                  Abbrechen
-                </Button>
-              </Link>
-            </div>
-          </form>
-        </div>
-      </main>
+            </Link>
+          </div>
+        </form>
     </div>
   )
 }

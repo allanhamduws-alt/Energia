@@ -79,7 +79,7 @@ export default function ReferenzenPage() {
   const [ctaRef, ctaVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.2 })
 
   return (
-    <main style={{ paddingTop: '80px' }}>
+    <main>
       {/* Hero Section */}
       <section
         ref={heroRef}

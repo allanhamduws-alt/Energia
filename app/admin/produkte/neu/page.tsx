@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -148,34 +147,27 @@ export default function AdminProduktNeuPage() {
     })
   }
 
+  // Auth wird vom AdminLayoutWrapper gehandhabt
   if (status === 'loading' || !session) {
-    return (
-      <div className="min-h-screen bg-background-secondary flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-energia-primary border-t-transparent rounded-full" />
-      </div>
-    )
+    return null
   }
 
   return (
-    <div className="min-h-screen bg-background-secondary">
-      <AdminSidebar />
-      
-      <main className="pt-20 xl:pt-6 xl:ml-64 px-4 sm:px-6 pb-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <Link 
-              href="/admin/produkte"
-              className="inline-flex items-center gap-2 text-foreground-muted hover:text-foreground mb-4 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Zurück zur Übersicht
-            </Link>
-            <h1 className="text-3xl font-bold text-foreground">Neues Produkt</h1>
-            <p className="text-foreground-muted mt-1">
-              Fügen Sie ein neues Produkt zum Katalog hinzu
-            </p>
-          </div>
+    <div className="max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="mb-8">
+        <Link 
+          href="/admin/produkte"
+          className="inline-flex items-center gap-2 text-foreground-secondary hover:text-foreground mb-4 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Zurück zur Übersicht
+        </Link>
+        <h1 className="text-3xl font-bold text-foreground">Neues Produkt</h1>
+        <p className="text-foreground-secondary mt-1">
+          Fügen Sie ein neues Produkt zum Katalog hinzu
+        </p>
+      </div>
 
           {error && (
             <motion.div
@@ -189,12 +181,12 @@ export default function AdminProduktNeuPage() {
 
           <form onSubmit={handleSubmit}>
             {/* Basic Info */}
-            <Card variant="default" padding="lg" className="mb-6">
-              <h2 className="text-xl font-semibold text-foreground mb-6">
+            <Card variant="default" padding="lg" className="mb-16">
+              <h2 className="text-xl font-semibold text-foreground mb-10">
                 Grundinformationen
               </h2>
               
-              <div className="space-y-4">
+              <div className="space-y-8">
                 <Input
                   label="Produktname *"
                   value={formData.name}
@@ -211,9 +203,9 @@ export default function AdminProduktNeuPage() {
                   required
                 />
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-8">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2.5">
                       Kategorie *
                     </label>
                     <select
@@ -229,7 +221,7 @@ export default function AdminProduktNeuPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2.5">
                       Marke *
                     </label>
                     <select
@@ -259,17 +251,17 @@ export default function AdminProduktNeuPage() {
             </Card>
 
             {/* Quick Specs (Tags) */}
-            <Card variant="default" padding="lg" className="mb-6">
+            <Card variant="default" padding="lg" className="mb-16">
               <h2 className="text-xl font-semibold text-foreground mb-4">
                 Kurzspezifikationen
               </h2>
-              <p className="text-sm text-foreground-muted mb-4">
+              <p className="text-sm text-foreground-muted mb-8">
                 Kurze Tags wie &quot;475W&quot;, &quot;Fullblack&quot;, &quot;N-Type&quot; die auf der Übersicht angezeigt werden
               </p>
               
-              <div className="space-y-3">
+              <div className="space-y-6">
                 {formData.specs.map((spec, index) => (
-                  <div key={index} className="flex gap-2">
+                  <div key={index} className="flex gap-4">
                     <Input
                       value={spec}
                       onChange={(e) => updateSpec(index, e.target.value)}
@@ -298,11 +290,11 @@ export default function AdminProduktNeuPage() {
             </Card>
 
             {/* Detailed Specs */}
-            <Card variant="default" padding="lg" className="mb-6">
+            <Card variant="default" padding="lg" className="mb-16">
               <h2 className="text-xl font-semibold text-foreground mb-4">
                 Detaillierte Spezifikationen
               </h2>
-              <p className="text-sm text-foreground-muted mb-4">
+              <p className="text-sm text-foreground-muted mb-8">
                 Technische Daten die im ausgeklappten Bereich angezeigt werden
               </p>
               
@@ -328,7 +320,7 @@ export default function AdminProduktNeuPage() {
               )}
 
               {/* Add new spec */}
-              <div className="flex gap-2">
+              <div className="flex gap-5">
                 <Input
                   value={newSpecKey}
                   onChange={(e) => setNewSpecKey(e.target.value)}
@@ -352,12 +344,12 @@ export default function AdminProduktNeuPage() {
             </Card>
 
             {/* Settings */}
-            <Card variant="default" padding="lg" className="mb-6">
-              <h2 className="text-xl font-semibold text-foreground mb-6">
+            <Card variant="default" padding="lg" className="mb-16">
+              <h2 className="text-xl font-semibold text-foreground mb-10">
                 Einstellungen
               </h2>
               
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-8">
                 <Input
                   label="Einheit"
                   value={formData.unit}
@@ -374,7 +366,7 @@ export default function AdminProduktNeuPage() {
                 />
               </div>
 
-              <div className="flex flex-wrap gap-6 mt-4">
+              <div className="flex flex-wrap gap-8 mt-8">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -398,7 +390,7 @@ export default function AdminProduktNeuPage() {
             </Card>
 
             {/* Submit */}
-            <div className="flex gap-4">
+            <div className="flex gap-6">
               <Button
                 type="submit"
                 variant="primary"
@@ -414,15 +406,13 @@ export default function AdminProduktNeuPage() {
               </Link>
             </div>
 
-            {brands.length === 0 && (
-              <p className="mt-4 text-sm text-amber-600">
-                ⚠️ Bitte erstellen Sie zuerst eine Marke, bevor Sie Produkte hinzufügen.{' '}
-                <Link href="/admin/marken/neu" className="underline">Marke erstellen →</Link>
-              </p>
-            )}
-          </form>
-        </div>
-      </main>
+          {brands.length === 0 && (
+            <p className="mt-4 text-sm text-amber-600">
+              ⚠️ Bitte erstellen Sie zuerst eine Marke, bevor Sie Produkte hinzufügen.{' '}
+              <Link href="/admin/marken/neu" className="underline">Marke erstellen →</Link>
+            </p>
+          )}
+        </form>
     </div>
   )
 }

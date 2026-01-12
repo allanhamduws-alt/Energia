@@ -40,10 +40,21 @@
   --gold-400: #fbbf24;        /* Hot Deal highlights */
   --gold-500: #f59e0b;        /* Primary gold accent */
   
-  /* Spacing Scale */
+  /* Spacing Scale - Sections */
   --space-section: 120px;
   --space-section-sm: 80px;
   --space-block: 60px;
+  
+  /* Spacing Scale - Components (NEU - mehr Luft!) */
+  --space-card-padding: 40px;          /* Card Innenabstand */
+  --space-card-padding-md: 32px;       /* Card Innenabstand mittel */
+  --space-card-padding-sm: 24px;       /* Card Innenabstand klein */
+  --space-form-gap: 24px;              /* Zwischen Formular-Feldern */
+  --space-form-gap-sm: 20px;           /* Zwischen Formular-Feldern (kompakt) */
+  --space-heading-after: 24px;         /* Nach Überschriften */
+  --space-heading-section: 32px;       /* Nach Section-Überschriften in Cards */
+  --space-label: 10px;                 /* Label zu Input Abstand */
+  --space-hint: 8px;                   /* Input zu Hint Abstand */
   --space-element: 32px;
   --space-item: 20px;
   
@@ -332,3 +343,149 @@ a {
 .justify-center { justify-content: center; }
 .justify-between { justify-content: space-between; }
 .flex-wrap { flex-wrap: wrap; }
+
+/* ============================================
+   ADMIN DARK MODE - Semantic Colors
+   ============================================ */
+:root {
+  /* 
+   * Dark Mode Text Hierarchy (nur 3 Stufen!)
+   * Höherer Kontrast für bessere Lesbarkeit
+   */
+  --foreground: #ffffff;            /* Weiß - Primärtext, Überschriften */
+  --foreground-secondary: #e2e8f0;  /* slate-200 - Sekundärtext, Beschreibungen */
+  --foreground-muted: #94a3b8;      /* slate-400 - Placeholder, sehr dezent */
+  
+  /* Backgrounds */
+  --background: #020617;            /* slate-950 - Main background */
+  --background-secondary: #0f172a;  /* slate-900 - Secondary background */
+  --card: #1e293b;                  /* slate-800 - Card background */
+  --border: #334155;                /* slate-700 - Border color */
+  --border-light: #475569;          /* slate-600 - Hover borders */
+  --error: #f87171;                 /* red-400 */
+  
+  /* Energia Brand Colors */
+  --energia-primary: #22c55e;       /* green-500 */
+  --energia-bg: rgba(34, 197, 94, 0.1);
+  --energia-light: rgba(34, 197, 94, 0.2);
+}
+
+/* Admin specific overrides - einheitliche Farben */
+.bg-slate-950,
+.bg-slate-900 {
+  --foreground: #ffffff;
+  --foreground-secondary: #e2e8f0;
+  --foreground-muted: #94a3b8;
+  --card: #1e293b;
+  --border: #475569;
+}
+
+/* Utility classes for semantic colors */
+.text-foreground { color: var(--foreground) !important; }
+.text-foreground-secondary { color: var(--foreground-secondary) !important; }
+.text-foreground-muted { color: var(--foreground-muted) !important; }
+.bg-card { background-color: var(--card) !important; }
+.bg-background { background-color: var(--background) !important; }
+.bg-background-secondary { background-color: var(--background-secondary) !important; }
+.border-border { border-color: var(--border) !important; }
+.border-border-light { border-color: var(--border-light) !important; }
+
+/* Placeholder color fix for inputs */
+.placeholder\:text-foreground-muted::placeholder {
+  color: var(--foreground-muted) !important;
+}
+
+/* Product Card Dark Mode Fixes */
+.bg-slate-900 h2,
+.bg-slate-900 h3,
+.bg-slate-950 h2,
+.bg-slate-950 h3 {
+  color: #f8fafc !important; /* slate-50 */
+}
+
+/* KPI Card Stats - High Contrast for Dark Mode */
+.bg-slate-900 .text-4xl,
+.bg-slate-900 .text-3xl {
+  color: #ffffff !important;
+}
+
+.bg-slate-900 .text-sm.font-medium {
+  color: #cbd5e1 !important; /* slate-300 */
+}
+
+.bg-slate-900 .text-xs {
+  color: #94a3b8 !important; /* slate-400 */
+}
+
+/* Light gold for emphasis in dark mode */
+.text-gold-light {
+  color: #fde68a; /* amber-200 */
+}
+
+/* ============================================
+   GLOBAL SPACING UTILITIES
+   Für konsistentes Spacing überall
+   ============================================ */
+
+/* Form Spacing - für Formulare mit Feldern */
+.form-spacing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-form-gap);
+}
+
+.form-spacing-sm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-form-gap-sm);
+}
+
+/* Card Content Spacing */
+.card-content-spacing > * + * {
+  margin-top: var(--space-form-gap);
+}
+
+/* Heading Spacing */
+.heading-space {
+  margin-bottom: var(--space-heading-after);
+}
+
+.section-heading-space {
+  margin-bottom: var(--space-heading-section);
+}
+
+/* ============================================
+   GLOBALE ELEMENT-ABSTÄNDE
+   Abstand zwischen Karten, Buttons, etc.
+   ============================================ */
+
+/* Abstand zwischen Cards/Sections */
+.card + .card,
+[class*="Card"] + [class*="Card"] {
+  margin-top: 4rem; /* 64px - viel Luft zwischen Karten! */
+}
+
+/* Abstand zwischen Buttons */
+.btn + .btn,
+button + button,
+button + a,
+a + button {
+  margin-left: 1rem; /* 16px */
+}
+
+/* Vertikale Button-Gruppen */
+.flex-col button + button,
+.flex-col .btn + .btn {
+  margin-left: 0;
+  margin-top: 1rem;
+}
+
+/* Grid Gaps global erhöhen */
+.grid {
+  gap: 2rem; /* 32px default gap */
+}
+
+/* Admin Card Sections - großer Abstand */
+.admin-section + .admin-section {
+  margin-top: 4rem;
+}

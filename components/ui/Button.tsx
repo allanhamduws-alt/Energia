@@ -48,13 +48,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         color: '#ffffff',
       },
       outline: {
-        backgroundColor: 'transparent',
-        borderColor: '#e2e8f0',
-        color: '#1e293b',
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        borderColor: '#475569',
+        color: '#f1f5f9',  // Hell für Dark Mode Lesbarkeit
       },
       ghost: {
-        backgroundColor: 'transparent',
-        color: '#475569',
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        color: '#e2e8f0',  // Hell für Dark Mode Lesbarkeit
       },
       link: {
         backgroundColor: 'transparent',

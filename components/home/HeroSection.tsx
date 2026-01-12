@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { HeroProductCluster } from '@/components/hero/HeroProductCluster'
 
 // Professional SVG Icons for Info-Leiste
 const icons = {
@@ -49,121 +48,178 @@ export function HeroSection() {
         flexDirection: 'column',
       }}
     >
-      {/* Hero Main Area */}
+      {/* Hero Main Area with Gradient Blobs */}
       <div
         style={{
           flex: 1,
           position: 'relative',
           display: 'flex',
           alignItems: 'center',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 50%, #dcfce7 100%)',
           overflow: 'hidden',
         }}
       >
-        <div className="container" style={{ position: 'relative', zIndex: 1, paddingTop: '120px', paddingBottom: '60px' }}>
-          {/* Two Column Layout */}
-          <div
+        {/* Gradient Blob Background - Bold & Prominent */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: '#fafafa',
+            zIndex: 0,
+          }}
+        />
+        
+        {/* Big Green Blob - Top Left */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '-20%',
+            left: '-10%',
+            width: '70%',
+            height: '90%',
+            background: 'radial-gradient(circle, rgba(34, 197, 94, 0.55) 0%, rgba(34, 197, 94, 0.3) 40%, transparent 70%)',
+            filter: 'blur(60px)',
+            zIndex: 0,
+          }}
+        />
+        
+        {/* Teal/Cyan Blob - Top Right */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '-30%',
+            right: '-15%',
+            width: '65%',
+            height: '100%',
+            background: 'radial-gradient(circle, rgba(6, 182, 212, 0.5) 0%, rgba(16, 185, 129, 0.25) 50%, transparent 70%)',
+            filter: 'blur(80px)',
+            zIndex: 0,
+          }}
+        />
+        
+        {/* Green Blob - Bottom Right */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '-30%',
+            right: '10%',
+            width: '60%',
+            height: '80%',
+            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, rgba(34, 197, 94, 0.2) 50%, transparent 70%)',
+            filter: 'blur(70px)',
+            zIndex: 0,
+          }}
+        />
+        
+        {/* Accent Blob - Bottom Left */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '-10%',
+            left: '-5%',
+            width: '50%',
+            height: '60%',
+            background: 'radial-gradient(circle, rgba(6, 182, 212, 0.4) 0%, transparent 60%)',
+            filter: 'blur(60px)',
+            zIndex: 0,
+          }}
+        />
+
+        {/* Content */}
+        <div 
+          className="container" 
+          style={{ 
+            position: 'relative', 
+            zIndex: 1, 
+            paddingTop: '40px', 
+            paddingBottom: '60px',
+            textAlign: 'center',
+          }}
+        >
+          {/* Headline */}
+          <h1
+            className="animate-on-scroll is-visible"
             style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '40px',
-              alignItems: 'center',
+              fontSize: 'clamp(2.5rem, 5vw, 3.75rem)',
+              fontWeight: 700,
+              lineHeight: 1.1,
+              color: '#171717',
+              marginBottom: '24px',
+              letterSpacing: '-0.025em',
+              maxWidth: '800px',
+              marginLeft: 'auto',
+              marginRight: 'auto',
             }}
-            className="hero-grid"
           >
-            {/* Text Content - Left */}
-            <div style={{ maxWidth: '550px' }}>
-              {/* Headline */}
-              <h1
-                className="animate-on-scroll is-visible"
-                style={{
-                  fontSize: 'clamp(2.25rem, 4.5vw, 3.25rem)',
-                  fontWeight: 700,
-                  lineHeight: 1.12,
-                  color: '#171717',
-                  marginBottom: '24px',
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                Wir versorgen Großhändler,
-                <br />
-                Reseller und Installateure.
-              </h1>
+            Wir versorgen Großhändler,
+            <br />
+            Reseller und Installateure.
+          </h1>
 
-              {/* Subheadline */}
-              <p
-                className="animate-on-scroll is-visible delay-100"
-                style={{
-                  fontSize: '1.125rem',
-                  lineHeight: 1.7,
-                  color: '#525252',
-                  marginBottom: '36px',
-                  maxWidth: '480px',
-                }}
-              >
-                Keine Warteschlangen, direkte Kommunikation, sofortige Verfügbarkeit.
-              </p>
+          {/* Subheadline */}
+          <p
+            className="animate-on-scroll is-visible delay-100"
+            style={{
+              fontSize: '1.25rem',
+              lineHeight: 1.7,
+              color: '#525252',
+              marginBottom: '40px',
+              maxWidth: '550px',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
+          >
+            Keine Warteschlangen, direkte Kommunikation, sofortige Verfügbarkeit.
+          </p>
 
-              {/* CTA Buttons */}
-              <div
-                className="animate-on-scroll is-visible delay-200"
-                style={{
-                  display: 'flex',
-                  gap: '16px',
-                  flexWrap: 'wrap',
-                }}
-              >
-                <Link
-                  href="/produkte"
-                  className="btn-pulse"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '16px 32px',
-                    background: '#16a34a',
-                    color: 'white',
-                    fontSize: '16px',
-                    fontWeight: 600,
-                    borderRadius: '8px',
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  Produkte ansehen
-                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </Link>
-                <Link
-                  href="/kontakt"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    padding: '16px 32px',
-                    background: 'white',
-                    color: '#171717',
-                    fontSize: '16px',
-                    fontWeight: 600,
-                    borderRadius: '8px',
-                    border: '1px solid #d4d4d4',
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  Kontakt aufnehmen
-                </Link>
-              </div>
-            </div>
-
-            {/* Hero Products - Right - Product Cluster with Parallax */}
-            <div
+          {/* CTA Buttons */}
+          <div
+            className="animate-on-scroll is-visible delay-200"
+            style={{
+              display: 'flex',
+              gap: '16px',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}
+          >
+            <Link
+              href="/produkte"
+              className="btn-pulse"
               style={{
-                position: 'relative',
-                height: '480px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '16px 32px',
+                background: '#16a34a',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: 600,
+                borderRadius: '8px',
+                transition: 'all 0.2s ease',
               }}
-              className="hero-image-container"
             >
-              <HeroProductCluster />
-            </div>
+              Produkte ansehen
+              <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+            <Link
+              href="/kontakt"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '16px 32px',
+                background: 'rgba(255, 255, 255, 0.8)',
+                backdropFilter: 'blur(8px)',
+                color: '#171717',
+                fontSize: '16px',
+                fontWeight: 600,
+                borderRadius: '8px',
+                border: '1px solid rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              Kontakt aufnehmen
+            </Link>
           </div>
         </div>
       </div>
@@ -239,20 +295,6 @@ export function HeroSection() {
       </div>
 
       <style jsx>{`
-        .hero-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-        }
-        @media (max-width: 1024px) {
-          .hero-grid {
-            grid-template-columns: 1fr !important;
-            gap: 40px !important;
-          }
-          .hero-image-container {
-            order: -1;
-            height: 350px !important;
-          }
-        }
         @media (max-width: 768px) {
           .info-grid {
             grid-template-columns: repeat(2, 1fr) !important;
